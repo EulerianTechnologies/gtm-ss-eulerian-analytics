@@ -8,7 +8,7 @@ You need to have :
 - Eulerian Account - head on to [Eulerian.IO](https://www.eulerian.io) for a free account
 - Create a website
 - Get the generic third-party tracking collection domain, for example: https://io1.eulerian.net, the targetHost will be io1
-- Implement the S2S connector
+- Implement the S2S connector in GTM-SS
 - You are live ! 
 
 ### Folder structure
