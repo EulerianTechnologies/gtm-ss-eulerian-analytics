@@ -48,13 +48,6 @@ ___TEMPLATE_PARAMETERS___
           }
         ],
         "alwaysInSummary": true
-      },
-      {
-        "type": "TEXT",
-        "name": "userEmailSHA256",
-        "displayName": "User Email Hash SHA256",
-        "simpleValueType": true,
-        "help": "SHA 256 of email hash"
       }
     ]
   }
@@ -68,7 +61,6 @@ const sendHttpRequest = require('sendHttpRequest');
 const getAllEventData = require('getAllEventData');
 const parseUrl = require('parseUrl');
 const getTimestampMillis = require('getTimestampMillis');
-const Math = require('Math');
 const JSON = require('JSON');
 
 const TEMPLATE_VERSION = '1.0.0';
@@ -127,10 +119,10 @@ let targetURL = "https://"+getData("targetHost")+".eulerian.net/collectorjson/-/
 sendHttpRequest(targetURL, {
   headers: {
    "X-Eulerian-Client" : "GTM-SS",
-   "Content-Type" : "application/json"
+   "Content-Type" : "application/json; charset=UTF-8"
   },
-  method: 'POST',
-  timeout: 500,
+  method: "POST",
+  timeout: 500
 }, JSON.stringify(payload)).then((result) => {
   setResponseStatus(result.statusCode);
   setResponseBody(result.body);
