@@ -41,7 +41,7 @@ ___TEMPLATE_PARAMETERS___
         "name": "targetHost",
         "displayName": "Name of the target sub-domain",
         "simpleValueType": true,
-        "help": "Takes the value of the sub-domain provided in data-collection domain. Example: https://io1.eulerian.net - you need to provide io1" 
+        "help": "Takes the value of the sub-domain provided in data-collection domain. Example: https://io1.eulerian.net - you need to provide io1", 
         "valueValidators": [
           {
             "type": "NON_EMPTY"
