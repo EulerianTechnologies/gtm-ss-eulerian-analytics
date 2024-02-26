@@ -131,9 +131,6 @@ sendHttpRequest(targetURL, {
   method: "POST",
   timeout: 500
 }, JSON.stringify(payload)).then((result) => {
-  setResponseStatus(result.statusCode);
-  setResponseBody(result.body);
-  setResponseHeader('cache-control', result.headers['cache-control']);
 });
 
 
