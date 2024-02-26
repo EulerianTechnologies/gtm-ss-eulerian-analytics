@@ -1,5 +1,5 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.wiki
 versions:
-  - sha: 5b6b49f50ce3418e1d687a293b1e433f5e5fde70206d9eea5a653577c1b2ef35
+  - sha: e9be8988bdcd45a549cd054dd3d4bcc5013dbe2e
     changeNotes: Initial release.
