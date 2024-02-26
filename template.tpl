@@ -67,7 +67,7 @@ const encodeUriComponent = require('encodeUriComponent');
 const sendHttpRequest = require('sendHttpRequest');
 const getAllEventData = require('getAllEventData');
 const parseUrl = require('parseUrl');
-const getTimestamp = require('getTimestamp');
+const getTimestampMillis = require('getTimestampMillis');
 const Math = require('Math');
 const JSON = require('JSON');
 
@@ -81,17 +81,50 @@ const onFailure = () => {
   data.gtmOnFailure();
 };
 
-let payload = {};
+function getData(key) {
+  let d = data;
+    
+  if (typeof(d[key]) != 'undefined') {
+    return d[key];
+  }
+  
+  d = getAllEventData();
+  if (typeof(d[key]) != 'undefined') {
+    return d[key];
+  }
+   
+  return data[key];
+}
+
+/**
+ * Build payload
+ */
+
+let payload = {
+ "url" : getData("page_location"),
+ "rf" : getData("page_referrer"),
+ "ss" : getData("screen_resolution"),
+ "ereplay-ip" : getData("ip_override"),
+ "ereplay-ua" : getData("user_agent"),
+ "ereplay-time" : getTimestampMillis() / 1000,
+ "euidl" : getData("client_id"),
+ "currency" : getData("currency"),
+ "uid" : getData("user_id"),
+ "email" : getData("user_data.sha256_email_address")
+};
 
 
-let allData = getAllEventData();
+/**
+ * targetURL
+ */
 
+let targetURL = "https://"+getData("targetHost")+".eulerian.net/collectorjson/-/"+getTimestampMillis();
 
 
 /**
  * Send network call
  */
-sendHttpRequest('https://XXX.eulerian.net/collectorjson/', {
+sendHttpRequest(targetURL, {
   headers: {
    "X-Eulerian-Client" : "GTM-SS",
    "Content-Type" : "application/json"
