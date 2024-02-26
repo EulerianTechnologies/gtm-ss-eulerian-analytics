@@ -7,7 +7,7 @@ Google Tag Manager connector for Eulerian Marketing Platform
 You need to have :
 - Eulerian Account - head on to [Eulerian.IO](https://www.eulerian.io) for a free account
 - Create a website
-- Get the generic third-party tracking collection tag
+- Get the generic third-party tracking collection domain, for example: https://io1.eulerian.net, the targetHost will be io1
 - Implement the S2S connector
 - You are live ! 
 
