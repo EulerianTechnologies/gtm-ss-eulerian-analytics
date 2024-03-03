@@ -120,7 +120,7 @@ function items2product(items, isRemove) {
       "ref"       : item.item_id,
       "name"      : item.item_name || '',
       "quantity"  : qty,
-      "price"     : item.item_price || 0,
+      "amount"    : item.item_price || 0,
       "params"    : {}
     };
     // work on other params
