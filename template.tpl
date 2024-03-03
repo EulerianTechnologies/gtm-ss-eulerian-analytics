@@ -114,7 +114,7 @@ function isDefined(val) {
 function items2product(items, isRemove) {
   return (items || []).map((item,idx) => {
     // if remove_from_cart we invert the quantity
-    let qty = isRemove ? item.quantity * -1 : item.quantity;
+    let qty = isRemove ? item.item_quantity * -1 : item.item_quantity;
 
     let h_prd = {
       "ref"       : item.item_id,
