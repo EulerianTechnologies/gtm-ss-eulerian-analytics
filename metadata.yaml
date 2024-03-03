@@ -1,7 +1,7 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.wiki
 versions:
-  - sha: ed7b8e8173464c3b34a5f9eebf14d67c4450ffef
+  - sha: 6211fcfaca7d4790bcd0ea4aa5253ed2d0730853
     changeNotes: ecommerce + clean API
   - sha: e9be8988bdcd45a549cd054dd3d4bcc5013dbe2e
     changeNotes: Initial release.
