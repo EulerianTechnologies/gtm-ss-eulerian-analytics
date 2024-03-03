@@ -65,13 +65,10 @@ ___TEMPLATE_PARAMETERS___
 
 ___SANDBOXED_JS_FOR_SERVER___
 
-const encodeUriComponent = require('encodeUriComponent');
 const sendHttpRequest = require('sendHttpRequest');
 const getAllEventData = require('getAllEventData');
-const parseUrl = require('parseUrl');
 const getTimestampMillis = require('getTimestampMillis');
 const JSON = require('JSON');
-const logToConsole = require('logToConsole');
 const makeInteger = require('makeInteger');
 
 const TEMPLATE_VERSION = '1.0.0';
