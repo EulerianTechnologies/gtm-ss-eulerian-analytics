@@ -204,7 +204,6 @@ switch ( event_name ) {
     payload.products = items2product(getData("items"));
     augmentPayload(payload, gaEData);
     break;
-  /* otherwise it's an action */
   default:
     let params = {};
     augmentPayload(params, gaEData);
