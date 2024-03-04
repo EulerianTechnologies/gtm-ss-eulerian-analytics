@@ -60,16 +60,16 @@ ___TEMPLATE_PARAMETERS___
     "subParams": [
       {
         "type": "CHECKBOX",
-        "name": "Consent : traffic is always consented",
+        "name": "enoepm",
         "checkboxText" : "Trafic is always consented",
         "simpleValueType": true,
-        "help": "Consent : traffic is always consented, WARNING: this mean consent is properly decided BEFORE this tag is triggered.",
+        "help": "Traffic is always consented, WARNING: this mean consent is properly decided BEFORE this tag is triggered.",
         "alwaysInSummary": true
       },
       {
         "type" : "TEXT",
         "name": "consent-pmcat",
-        "displayName" : "Consent: list of pmcat values to use for consent",
+        "displayName" : "List of pmcat values to use for consent",
         "simpleValueType": true,
         "help": "Takes the ids of pmcats for which you have consent, ex: 1-3",
         "alwaysInSummary": true
@@ -77,7 +77,7 @@ ___TEMPLATE_PARAMETERS___
       {
         "type" : "TEXT",
         "name": "consent-tcf",
-        "displayName" : "Consent: provide TCF TCstring",
+        "displayName" : "Provide TCF TCstring",
         "simpleValueType": true,
         "help": "Takes the content of a complete/valid TCF TCString",
         "alwaysInSummary": true
@@ -95,7 +95,7 @@ const getTimestampMillis = require('getTimestampMillis');
 const JSON = require('JSON');
 const makeInteger = require('makeInteger');
 
-const TEMPLATE_VERSION = '1.0.0';
+const TEMPLATE_VERSION = '1.0.1';
 
 /**
  * avoid list of entries for copy
@@ -148,7 +148,7 @@ function items2product(items, isRemove) {
     [
       "item_brand", "item_category", "item_category2",
       "item_category3", "item_category4", "item_category5",
-      "item_list_id", "item_list_name", "item_variant",
+      "item_list_id", "item_list_name", "item_variant"
     ].forEach((key) => {
       if ( isDefined(item[key]) ) {
         let rex = "/^item_";
@@ -189,14 +189,14 @@ let payload = {
 /**
  * Handle consent
  */
-if ( getData('enoepm') ) {
+if ( getData("enoepm") ) {
   payload.enoepm = 1;
 } else {
-  if ( isDefined(getData('consent-pmcat')) ) {
-    payload.pmcat = getData('consent-pmcat'); 
+  if ( isDefined(getData("consent-pmcat")) ) {
+    payload.pmcat = getData("consent-pmcat"); 
   }
-  if ( isDefined(getData('consent-tcf')) ) {
-    payload.gdpr_consent = getData('consent-tcf'); 
+  if ( isDefined(getData("consent-tcf")) ) {
+    payload.gdpr_consent = getData("consent-tcf"); 
     payload.gdpr = 1;
   }
 }
@@ -275,9 +275,9 @@ sendHttpRequest(
   },
   {
     headers: {
-      "X-Eulerian-Client" : "GTM-SS",
-      "X-Forwarded-For" : payload["ereplay-ip"],
-      "Content-Type" : "application/json; charset=UTF-8"
+      "X-Eulerian-Client": "GTM-SS",
+      "X-Forwarded-For": payload["ereplay-ip"],
+      "Content-Type": "application/json; charset=UTF-8"
     },
     method: "POST",
     timeout: 500
