@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.wiki
 versions:
+  - sha: 22bbf2d11a0d32f869813c55d36a9700d73c0671
+    changeNotes: consent management + x-fwd-for IP for load-balancing
   - sha: bccbc3d99933dbf45a4d54268f1a07fc9f2a1158
     changeNotes: ecommerce + clean API
   - sha: e9be8988bdcd45a549cd054dd3d4bcc5013dbe2e
