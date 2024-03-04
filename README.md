@@ -2,27 +2,21 @@
 
 Google Tag Manager connector for Eulerian Marketing Platform
 
-## Documentation
+If you don't already have an account, you can try our freemium platform through [Eulerian.IO](https://www.eulerian.io) to create a free account & declare your website.
 
-You need to have :
-- Eulerian Account - head on to [Eulerian.IO](https://www.eulerian.io) for a free account
-- Create a website
-- Get the generic third-party tracking collection domain, for example: https://io1.eulerian.net, the targetHost will be io1
-- Implement the S2S connector in GTM-SS
-- You are live ! 
+### Documentation
 
-### Folder structure
-
-The source for the GTM template is in the `./template.tpl` file.
-
-### How to deploy
-
-1. download the file template.tpl
+1. download the file `template.tpl`
 2. go to you google tagmanager instance
 3. go to the "Templates" section
 4. create new template, on the upper right side you click on the three dots & select import
 5. the template is imported you just need to configure with the proper subdomain from the third-party tracking url
-6. set the consent mode configuration, one of the three options :
+
+   5.1 example : if you tracking domain is : `https://et1.eulerian.net` the **targetHost** is **et1**
+   
+   5.2 example : if you tracking domain is : `https://io1.eulerian.net` the **targetHost** is **io1**
+   
+7. set the consent mode configuration, one of the three options :
    
    6.1 Consent is handled before us being called -> set the enoepm=1 parameter
    
@@ -31,8 +25,9 @@ The source for the GTM template is in the `./template.tpl` file.
    6.3 Consent through TCF, in this case the TCString needs to be provided through a custom variable.
    
 8. save & publish the template
+9. you are now live !
 
-### Which event are mapped
+### Which events are mapped
 
 #### global mapping
 
