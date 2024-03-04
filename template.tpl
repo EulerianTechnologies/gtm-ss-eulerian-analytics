@@ -51,6 +51,38 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "alwaysInSummary": true
+  },
+  {
+    "type": "GROUP",
+    "name": "Consent",
+    "displayName": "Manage consent",
+    "groupStyle": "ZIPPY_OPEN",
+    "subParams": [
+      {
+        "type": "CHECKBOX",
+        "name": "Consent : traffic is always consented",
+        "checkboxText" : "Trafic is always consented",
+        "simpleValueType": true,
+        "help": "Consent : traffic is always consented, WARNING: this mean consent is properly decided BEFORE this tag is triggered.",
+        "alwaysInSummary": true
+      },
+      {
+        "type" : "TEXT",
+        "name": "consent-pmcat",
+        "displayName" : "Consent: list of pmcat values to use for consent",
+        "simpleValueType": true,
+        "help": "Takes the ids of pmcats for which you have consent, ex: 1-3",
+        "alwaysInSummary": true
+      },
+      {
+        "type" : "TEXT",
+        "name": "consent-tcf",
+        "displayName" : "Consent: provide TCF TCstring",
+        "simpleValueType": true,
+        "help": "Takes the content of a complete/valid TCF TCString",
+        "alwaysInSummary": true
+      }
+    ]
   }
 ]
 
@@ -154,6 +186,21 @@ let payload = {
  "email"        : (getData("user_data") || {}).sha256_email_address
 };
 
+/**
+ * Handle consent
+ */
+if ( getData('enoepm') ) {
+  payload.enoepm = 1;
+} else {
+  if ( isDefined(getData('consent-pmcat')) ) {
+    payload.pmcat = getData('consent-pmcat'); 
+  }
+  if ( isDefined(getData('consent-tcf')) ) {
+    payload.gdpr_consent = getData('consent-tcf'); 
+    payload.gdpr = 1;
+  }
+}
+
 let event_name = getData("event_name");
 let gaEData = getAllEventData() || {};
 
@@ -190,7 +237,11 @@ switch ( event_name ) {
   case 'generate_lead':
     payload.estimate = 1;
     payload.amount = getData("value");
+    payload.ref = getData("transaction_id");
     payload.products = items2product(getData("items"));
+    if ( !isDefined(payload.ref) ) {
+      payload.ref = 'estimate-'+getTimestampMillis();
+    }
     augmentPayload(payload, gaEData);
     break;
   default:
@@ -225,6 +276,7 @@ sendHttpRequest(
   {
     headers: {
       "X-Eulerian-Client" : "GTM-SS",
+      "X-Forwarded-For" : payload["ereplay-ip"],
       "Content-Type" : "application/json; charset=UTF-8"
     },
     method: "POST",
