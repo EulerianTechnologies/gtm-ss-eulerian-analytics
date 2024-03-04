@@ -23,10 +23,14 @@ The source for the GTM template is in the `./template.tpl` file.
 4. create new template, on the upper right side you click on the three dots & select import
 5. the template is imported you just need to configure with the proper subdomain from the third-party tracking url
 6. set the consent mode configuration, one of the three options :
-   o Consent is handled before us being called -> set the enoepm=1 parameter
-   o Consent through pmcat by providing the list of consented categories for the current call
-   o Consent through TCF, in this case the TCString needs to be provided through a custom variable.
-7. save & publish the template
+   
+   6.1 Consent is handled before us being called -> set the enoepm=1 parameter
+   
+   6.2 Consent through pmcat by providing the list of consented categories for the current call
+   
+   6.3 Consent through TCF, in this case the TCString needs to be provided through a custom variable.
+   
+8. save & publish the template
 
 ### Which event are mapped
 
