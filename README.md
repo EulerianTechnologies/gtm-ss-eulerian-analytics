@@ -88,6 +88,7 @@ This means that some functionnalities of the Eulerian Marketing Platform won't b
    o Identity sync for IdGraph, CookieSync, etc...
    o Real-Time access to current status of the user through javascript client-side API
    o Privacy Sandbox integration
+   o Client-Hints management
    o and probably other use cases
 
 ## License
