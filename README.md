@@ -79,6 +79,7 @@ Custom events not listed above are directly sent to actions/goals for further pr
 By setting up a data-collection in server-side mode like this one, you'll loose all access to the initial web-browser.
 This means that some functionnalities of the Eulerian Marketing Platform won't be available because of the server-side integration, for example and not limited by :
    - Heatmap
+   - Post-impression tracking
    - Client-Side TMS
    - Identity sync for IdGraph, CookieSync, etc...
    - Real-Time access to current status of the user through javascript client-side API
