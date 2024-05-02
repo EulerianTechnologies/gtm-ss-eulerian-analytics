@@ -47,7 +47,8 @@ ___TEMPLATE_PARAMETERS___
     "help": "Takes the value of the sub-domain provided in data-collection domain. Example: https://io1.eulerian.net - you need to provide io1", 
     "valueValidators": [
       {
-        "type": "NON_EMPTY"
+        "type": "REGEX",
+        "args": [ "^[a-z0-9\\-]+$" ]
       }
     ],
     "alwaysInSummary": true
@@ -94,6 +95,7 @@ const getAllEventData = require('getAllEventData');
 const getTimestampMillis = require('getTimestampMillis');
 const JSON = require('JSON');
 const makeInteger = require('makeInteger');
+const encoreUri = require('encodeUri');
 
 const TEMPLATE_VERSION = '1.0.1';
 
@@ -259,7 +261,7 @@ switch ( event_name ) {
  * targetURL
  */
 
-let targetURL = "https://"+getData("targetHost")+".eulerian.net/collectorjson/-/"+getTimestampMillis();
+let targetURL = "https://"+encodeUri(getData("targetHost"))+".eulerian.net/collectorjson/-/"+getTimestampMillis();
 
 /**
  * Send network call
