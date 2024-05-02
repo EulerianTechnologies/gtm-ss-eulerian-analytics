@@ -95,7 +95,7 @@ const getAllEventData = require('getAllEventData');
 const getTimestampMillis = require('getTimestampMillis');
 const JSON = require('JSON');
 const makeInteger = require('makeInteger');
-const encoreUri = require('encodeUri');
+const encodeUri = require('encodeUri');
 
 const TEMPLATE_VERSION = '1.0.1';
 
