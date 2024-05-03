@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.wiki
 versions:
+  - sha: dc701e5193165f2d40192ba41e98b1dfdde6a581
+    changeNotes: newlines in thumbnail
   - sha: 8d5aeb04ee63f637810f98f6e8087c007ca0d5e3
     changeNotes: add encoreUri as per issue#1 + tougher regexp on targetHost
   - sha: 22bbf2d11a0d32f869813c55d36a9700d73c0671
