@@ -135,20 +135,22 @@ function isDefined(val) {
 function items2product(items, isRemove) {
   return (items || []).map((item,idx) => {
     // if remove_from_cart we invert the quantity
-    let qty = isRemove ? item.item_quantity * -1 : item.item_quantity;
+    let rqty = item.quantity || item.item_quantity || 0;
+    let qty = isRemove ? rqty * -1 : rqty;
 
     let h_prd = {
       "ref"       : item.item_id,
       "name"      : item.item_name || '',
       "quantity"  : qty,
-      "amount"    : item.item_price || 0,
+      "amount"    : item.price || item.item_price || 0,
       "params"    : {}
     };
     // work on other params
     [
       "item_brand", "item_category", "item_category2",
       "item_category3", "item_category4", "item_category5",
-      "item_list_id", "item_list_name", "item_variant"
+      "item_list_id", "item_list_name", "item_variant",
+      "item_sku"
     ].forEach((key) => {
       if ( isDefined(item[key]) ) {
         let rex = "/^item_";
@@ -173,6 +175,8 @@ function augmentPayload(p, allData) {
  * Build payload
  */
 
+let user_data = getData("user_data") || {};
+
 let payload = {
  "url"              : getData("page_location"),
  "rf"               : getData("page_referrer"),
@@ -184,7 +188,7 @@ let payload = {
  "euidl"            : getData("client_id"),
  "currency"         : getData("currency"),
  "uid"              : getData("user_id"),
- "email"            : (getData("user_data") || {}).sha256_email_address
+ "email"            : user_data.em || user_data.email || ""
 };
 
 /**
@@ -212,6 +216,13 @@ let gaEData = getAllEventData() || {};
 switch ( event_name ) {
   case 'page_view':
     augmentPayload(payload, gaEData);
+    break;
+  case 'view_item':
+    let prd = items2product(getData("items"));
+    // only one product
+    if ( prd.length > 0 ) {
+      payload.products = prd[0];
+    }
     break;
   case 'add_to_cart':
     payload.scart = 1;
