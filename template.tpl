@@ -95,7 +95,7 @@ const JSON = require('JSON');
 const makeInteger = require('makeInteger');
 const encodeUri = require('encodeUri');
 
-const TEMPLATE_VERSION = '1.0.1';
+const TEMPLATE_VERSION = '1.1.1';
 
 /**
  * avoid list of entries for copy
