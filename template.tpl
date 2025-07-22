@@ -340,6 +340,10 @@ ___SERVER_PERMISSIONS___
               {
                 "type": 1,
                 "string": "https://*.eulerian.net/"
+              },
+              {
+                "type": 1,
+                "string": "https://*.eulerian.io/"
               }
             ]
           }
