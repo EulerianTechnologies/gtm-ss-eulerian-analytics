@@ -65,6 +65,10 @@ Products listed in the items array are added to the current cart.
 
 Products listed in the items array are removed from the current cart.
 
+#### view_item
+
+Product page is viewed and the first result of the items array is sent to Eulerian.
+
 #### generate_lead
 
 A lead is registered in this case :
