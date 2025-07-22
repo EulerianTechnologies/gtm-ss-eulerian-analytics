@@ -12,9 +12,11 @@ If you don't already have an account, you can try our freemium platform through 
 4. create new template, on the upper right side you click on the three dots & select import
 5. the template is imported you just need to configure with the proper subdomain from the third-party tracking url
 
-   5.1 example : if you tracking domain is : `https://et1.eulerian.net` the **targetHost** is **et1**
+   5.1 example : if you tracking domain is : `https://et1.eulerian.net` the **targetHost** is **et1.eulerian.net**
    
-   5.2 example : if you tracking domain is : `https://io1.eulerian.net` the **targetHost** is **io1**
+   5.2 example : if you tracking domain is : `https://io1.eulerian.net` the **targetHost** is **io1.eulerian.net**
+
+   5.3 example : if you tracking domain is : `https://sdf475.eulerian.io` the **targetHost** is **sdf475.eulerian.io**
    
 7. set the consent mode configuration, one of the three options :
    
@@ -88,6 +90,11 @@ This means that some functionnalities of the Eulerian Marketing Platform won't b
    - and probably other use cases
 
 So make sure you know what you are doing and know what you want to achieve.
+
+### SUPPORT
+
+We provide limited support through our free offering, if your setup is more complex we can provide consulting expertise and/or work with your expert agencies of your choice.
+This means that the current plugin works for most cases but not all cases, so please understand your own setup and make sure it makes sense regarding what we are collecting so that you can take the most of our platform. Enjoy !
 
 ## License
 
