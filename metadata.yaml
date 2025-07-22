@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
-documentation: https://eulerian.wiki
+documentation: https://eulerian.slite.page
 versions:
+  - sha:
+    changeNotes: support directly domain and not only subdomain
   - sha: dc701e5193165f2d40192ba41e98b1dfdde6a581
     changeNotes: newlines in thumbnail
   - sha: 8d5aeb04ee63f637810f98f6e8087c007ca0d5e3
