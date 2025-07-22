@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page
 versions:
+  - sha: 9e452c4bc56a80a7b5a2f5d2ff270ef17cb2ee7f
+    changeNotes: allow any URLs in send_http permissions
   - sha: 66ca060de7b6ea69ae5040eb669984206ae5f898
     changeNotes: more cases for quantity/amount management + view_item
   - sha: 2a72dda52486f5a1c24dd1b2e5989e73ec3ce0a7
