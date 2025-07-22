@@ -40,13 +40,13 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "TEXT",
     "name": "targetHost",
-    "displayName": "Name of the target sub-domain",
+    "displayName": "Name of the target domain",
     "simpleValueType": true,
-    "help": "Takes the value of the sub-domain provided in data-collection domain. Example: https://io1.eulerian.net - you need to provide io1", 
+    "help": "Takes the value of the domain provided in data-collection domain. Example: https://io1.eulerian.net - you need to provide io1.eulerian.net", 
     "valueValidators": [
       {
         "type": "REGEX",
-        "args": [ "^[a-z0-9\\-]+$" ]
+        "args": [ "^[a-z0-9.-]+\\.[a-z]{2,}$" ]
       }
     ],
     "alwaysInSummary": true
@@ -174,16 +174,17 @@ function augmentPayload(p, allData) {
  */
 
 let payload = {
- "url"          : getData("page_location"),
- "rf"           : getData("page_referrer"),
- "ss"           : getData("screen_resolution"),
- "ereplay-ip"   : getData("ip_override"),
- "ereplay-ua"   : getData("user_agent"),
- "ereplay-time" : makeInteger(getTimestampMillis() / 1000),
- "euidl"        : getData("client_id"),
- "currency"     : getData("currency"),
- "uid"          : getData("user_id"),
- "email"        : (getData("user_data") || {}).sha256_email_address
+ "url"              : getData("page_location"),
+ "rf"               : getData("page_referrer"),
+ "ss"               : getData("screen_resolution"),
+ "ereplay-ip"       : getData("ip_override"),
+ "ereplay-ua"       : getData("user_agent"),
+ "ereplay-time"     : makeInteger(getTimestampMillis() / 1000),
+ "ereplay-platform" : "gtm-ss",
+ "euidl"            : getData("client_id"),
+ "currency"         : getData("currency"),
+ "uid"              : getData("user_id"),
+ "email"            : (getData("user_data") || {}).sha256_email_address
 };
 
 /**
@@ -256,10 +257,16 @@ switch ( event_name ) {
 }
 
 /**
- * targetURL
+ * targetURL :
+ *  - targetHost has no dots -> old version -> add main domain
+ *  - targetHost has dots -> new version -> do not touch it
  */
 
-let targetURL = "https://"+encodeUri(getData("targetHost"))+".eulerian.net/collectorjson/-/"+getTimestampMillis();
+let targetHost = getData("targetHost");
+if ( !targetHost.includes('.') ) {
+  targetHost += ".eulerian.net";
+}
+let targetURL = "https://"+encodeUri(targetHost)+"/collectorjson/-/"+getTimestampMillis();
 
 /**
  * Send network call
