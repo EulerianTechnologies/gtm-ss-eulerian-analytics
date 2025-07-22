@@ -339,23 +339,7 @@ ___SERVER_PERMISSIONS___
           "key": "allowedUrls",
           "value": {
             "type": 1,
-            "string": "specific"
-          }
-        },
-        {
-          "key": "urls",
-          "value": {
-            "type": 2,
-            "listItem": [
-              {
-                "type": 1,
-                "string": "https://*.eulerian.net/"
-              },
-              {
-                "type": 1,
-                "string": "https://*.eulerian.io/"
-              }
-            ]
+            "string": "any"
           }
         }
       ]
