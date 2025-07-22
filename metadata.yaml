@@ -1,8 +1,10 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page
-versions:  
+versions:
+  - sha: 66ca060de7b6ea69ae5040eb669984206ae5f898
+    changeNotes: more cases for quantity/amount management + view_item
   - sha: 2a72dda52486f5a1c24dd1b2e5989e73ec3ce0a7
-    changeNodes: allowedUrls updated for eulerian.io support
+    changeNotes: allowedUrls updated for eulerian.io support
   - sha: 012e775b76018f235022c262986642d545093219
     changeNotes: support directly domain and not only subdomain
   - sha: dc701e5193165f2d40192ba41e98b1dfdde6a581
