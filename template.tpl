@@ -93,9 +93,8 @@ const getAllEventData = require('getAllEventData');
 const getTimestampMillis = require('getTimestampMillis');
 const JSON = require('JSON');
 const makeInteger = require('makeInteger');
-const encodeUri = require('encodeUri');
 
-const TEMPLATE_VERSION = '1.1.1';
+const TEMPLATE_VERSION = '1.1.3';
 
 /**
  * avoid list of entries for copy
@@ -277,7 +276,7 @@ let targetHost = getData("targetHost");
 if ( !targetHost.includes('.') ) {
   targetHost += ".eulerian.net";
 }
-let targetURL = "https://"+encodeUri(targetHost)+"/collectorjson/-/"+getTimestampMillis();
+let targetURL = "https://"+targetHost+"/collectorjson/-/"+getTimestampMillis();
 
 /**
  * Send network call
