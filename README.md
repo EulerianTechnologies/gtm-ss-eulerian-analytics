@@ -34,15 +34,15 @@ If you don't already have an account, you can try our freemium platform through 
 #### global mapping
 
 The following global parameters are always provided to each call sent to us as long as they exists in the original datalayer :
-  o page_location mapped to url
-  o page_referrer mapped to rf
-  o screen_resolution mapped to ss
-  o ip_override mapped to ereplay-ip
-  o user_agent mapped to ereplay-ua
-  o client_id mapped to euidl
-  o currency mapped to currency
-  o user_id mapped to uid
-  o user_data.sha256_email_address mapped to email
+- **page_location** mapped to **url**
+- **page_referrer** mapped to **rf**
+- **screen_resolution** mapped to **ss**
+- **ip_override** mapped to **ereplay-ip**
+- **user_agent** mapped to **ereplay-ua**
+- **client_id** mapped to **euidl**
+- **currency** mapped to **currency**
+- **user_id** mapped to **uid**
+- **user_data.sha256_email_address** or **user_data.em** mapped to **email**
 
 For each call we auto-copy all additionnal parameters of the event prefixed by **ga-**
 
@@ -53,17 +53,17 @@ Standard call done
 #### purchase
 
 A transaction is registered in this case :
-  o transaction_id mapped to ref
-  o value mapped to amount
-  o items mapped to product array & product params are prefixed by **ga-**
+- **transaction_id** mapped to **ref**
+- **value** mapped to **amount**
+- **items** mapped to product array & product params are prefixed by **ga-**
   
 #### add_to_cart
 
-Products listed in the items array are added to the current cart.
+Products listed in the **items** array are added to the current cart.
 
 #### remove_from_cart
 
-Products listed in the items array are removed from the current cart.
+Products listed in the **items** array are removed from the current cart.
 
 #### view_item
 
@@ -72,9 +72,9 @@ Product page is viewed and the first result of the items array is sent to Euleri
 #### generate_lead
 
 A lead is registered in this case :
-  o transaction_id mapped to ref, if not available a random ref is created
-  o value mapped to amount
-  o items mapped to product array & product params are prefixed by **ga-**
+- **transaction_id** mapped to **ref**, if not available a random ref is created
+- **value** mapped to **amount**
+- **items** mapped to product array & product params are prefixed by **ga-**
 
 #### custom events
 
