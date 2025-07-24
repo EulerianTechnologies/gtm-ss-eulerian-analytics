@@ -6,10 +6,10 @@ If you don't already have an account, you can try our freemium platform through 
 
 ### Documentation
 
-1. download the file `template.tpl`
-2. go to you google tagmanager instance
-3. go to the "Templates" section
-4. create new template, on the upper right side you click on the three dots & select import
+1. go to you google tagmanager instance
+2. go to the "Templates" section
+3. look for the Eulerian Marketing Platform - GTM SS template in the gallery
+4. create new template
 5. the template is imported you just need to configure with the proper subdomain from the third-party tracking url
 
    5.1 example : if you tracking domain is : `https://et1.eulerian.net` the **targetHost** is **et1.eulerian.net**
@@ -18,7 +18,7 @@ If you don't already have an account, you can try our freemium platform through 
 
    5.3 example : if you tracking domain is : `https://sdf475.eulerian.io` the **targetHost** is **sdf475.eulerian.io**
    
-7. set the consent mode configuration, one of the three options :
+6. set the consent mode configuration, one of the three options :
    
    6.1 Consent is handled before us being called -> set the enoepm=1 parameter
    
@@ -26,8 +26,9 @@ If you don't already have an account, you can try our freemium platform through 
    
    6.3 Consent through TCF, in this case the TCString needs to be provided through a custom variable.
    
-8. save & publish the template
-9. you are now live !
+7. save the template
+8. trigger the template with client = GA4 and on all events + custom events purchase / generate_lead.
+9. publish the modifications -> you are now **live** !
 
 ### Which events are mapped
 
