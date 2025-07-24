@@ -194,7 +194,7 @@ let payload = {
  "euidl"            : sha256Sync(getData("client_id"), {outputEncoding: 'hex'}),
  "currency"         : getData("currency"),
  "uid"              : getData("user_id"),
- "email"            : user_data.em || user_data.email || "",
+ "eemail"           : user_data.em || user_data.email || "",
  "enopagedt"        : 1,
  "x-ga-measurement_id" : getData("x-ga-measurement_id")
 };
