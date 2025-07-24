@@ -187,7 +187,8 @@ let payload = {
  "euidl"            : getData("client_id"),
  "currency"         : getData("currency"),
  "uid"              : getData("user_id"),
- "email"            : user_data.em || user_data.email || ""
+ "email"            : user_data.em || user_data.email || "",
+ "enopagedt"        : 1
 };
 
 /**
@@ -216,6 +217,7 @@ let gaEData = getAllEventData() || {};
  */
 switch ( event_name ) {
   case 'page_view':
+    payload.enopagedt = 1;
     augmentPayload(payload, gaEData);
     break;
   case 'view_item':
