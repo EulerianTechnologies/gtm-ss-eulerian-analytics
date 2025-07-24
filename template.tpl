@@ -107,7 +107,7 @@ const A_AVOID_LIST = [
   "ip_override", "user_agent", "client_id", "currency",
   "user_id", "user_data", "event_name", "items", "value"
 ];
-const AVOID_REX = createRegex('^(x-|)');
+const AVOID_REX = createRegex('^(x-)');
 
 let H_AVOID_LIST = {};
 A_AVOID_LIST.forEach( (key) => {
