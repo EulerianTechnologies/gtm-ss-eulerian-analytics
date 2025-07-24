@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page
 versions:
+  - sha: 8ffbc3fc27bd61a7199fcd2391395ed1b1a212b0
+    changeNotes: implement enopagedt to avoid double-counting, enforce sha256 on euidl to avoid special chars
   - sha: dcbb8c86be91a04ee53e59ed1639976fa1a0ed01
     changeNotes: view_item as array
   - sha: bd2204610860a4ac9e0fb97f5cf1fcc283769bca
