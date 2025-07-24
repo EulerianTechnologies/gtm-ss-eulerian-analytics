@@ -93,8 +93,11 @@ const getAllEventData = require('getAllEventData');
 const getTimestampMillis = require('getTimestampMillis');
 const JSON = require('JSON');
 const makeInteger = require('makeInteger');
+const createRegex = require('createRegex');
+const testRegex = require('testRegex');
+const sha256Sync = require('sha256Sync');
 
-const TEMPLATE_VERSION = '1.1.3';
+const TEMPLATE_VERSION = '1.2.1';
 
 /**
  * avoid list of entries for copy
@@ -104,6 +107,8 @@ const A_AVOID_LIST = [
   "ip_override", "user_agent", "client_id", "currency",
   "user_id", "user_data", "event_name", "items", "value"
 ];
+const AVOID_REX = createRegex('^(x-|)');
+
 let H_AVOID_LIST = {};
 A_AVOID_LIST.forEach( (key) => {
   H_AVOID_LIST[key] = 1;
@@ -164,7 +169,9 @@ function items2product(items, isRemove) {
 
 function augmentPayload(p, allData) {
   for ( const key in allData ) {
-    if ( allData.hasOwnProperty(key) && !isDefined(H_AVOID_LIST[key]) ) {
+    if ( allData.hasOwnProperty(key)
+      && !isDefined(H_AVOID_LIST[key])
+      && !testRegex(AVOID_REX,key) ) {
       p[key] = allData[key];
     }
   }
@@ -184,11 +191,12 @@ let payload = {
  "ereplay-ua"       : getData("user_agent"),
  "ereplay-time"     : makeInteger(getTimestampMillis() / 1000),
  "ereplay-platform" : "gtm-ss",
- "euidl"            : getData("client_id"),
+ "euidl"            : sha256Sync(getData("client_id"), {outputEncoding: 'hex'}),
  "currency"         : getData("currency"),
  "uid"              : getData("user_id"),
  "email"            : user_data.em || user_data.email || "",
- "enopagedt"        : 1
+ "enopagedt"        : 1,
+ "x-ga-measurement_id" : getData("x-ga-measurement_id")
 };
 
 /**
@@ -217,7 +225,7 @@ let gaEData = getAllEventData() || {};
  */
 switch ( event_name ) {
   case 'page_view':
-    payload.enopagedt = 1;
+    payload.enopagedt = 0;
     augmentPayload(payload, gaEData);
     break;
   case 'view_item':
