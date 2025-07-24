@@ -206,6 +206,8 @@ if ( getData("enoepm") ) {
 }
 
 let event_name = getData("event_name");
+payload["ga-event_name"] = event_name;
+
 let gaEData = getAllEventData() || {};
 
 /**
