@@ -80,6 +80,14 @@ A lead is registered in this case :
 
 Custom events not listed above are directly sent to actions/goals for further processing in the platform.
 
+### MULTI-EVENTS
+
+As GTM can trigger multiple events and hence our tag it can result in multiple calls on our end that can inflate the stats.
+
+To avoid this make sure :
+- you only trigger the Eulerian GTM SS only for the event you want to track
+- avoid multi-event call on a single page : page_view -> view_item -> user_engagement for example only trigger on view_item if exists for example.
+
 ### WARNING
 
 By setting up a data-collection in server-side mode like this one, you'll loose all access to the initial web-browser.
