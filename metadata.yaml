@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page
 versions:
+  - sha: 8da1f9d46491a7d7dba96d7ef850c7b28cc36fa7
+    changeNotes: eemail param
   - sha: 8ffbc3fc27bd61a7199fcd2391395ed1b1a212b0
     changeNotes: implement enopagedt to avoid double-counting, enforce sha256 on euidl to avoid special chars
   - sha: dcbb8c86be91a04ee53e59ed1639976fa1a0ed01
