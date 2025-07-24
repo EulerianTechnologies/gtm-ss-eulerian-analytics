@@ -220,7 +220,7 @@ switch ( event_name ) {
     let prd = items2product(getData("items"));
     // only one product
     if ( prd.length > 0 ) {
-      payload.products = prd[0];
+      payload.products = [ prd[0] ];
     }
     break;
   case 'add_to_cart':
