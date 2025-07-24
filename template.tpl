@@ -257,7 +257,7 @@ switch ( event_name ) {
     break;
   default:
     // by default - avoid counting site-centric events for other non-standard events
-    let params = { "enotagdt" : 1 };
+    let params = { "enopagedt" : 1 };
     augmentPayload(params, gaEData);
 
     payload.actions = [{
