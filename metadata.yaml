@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page
 versions:
+  - sha: b3effca735521f185fdb42c726f92aaf371de92f
+    changeNotes: cleaner regexp for dropping system info
   - sha: 8da1f9d46491a7d7dba96d7ef850c7b28cc36fa7
     changeNotes: eemail param
   - sha: 8ffbc3fc27bd61a7199fcd2391395ed1b1a212b0
