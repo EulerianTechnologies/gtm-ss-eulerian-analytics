@@ -273,7 +273,7 @@ switch ( event_name ) {
  */
 
 let targetHost = getData("targetHost");
-if ( !targetHost.includes('.') ) {
+if ( targetHost.indexOf('.') < 0 ) {
   targetHost += ".eulerian.net";
 }
 let targetURL = "https://"+targetHost+"/collectorjson/-/"+getTimestampMillis();
