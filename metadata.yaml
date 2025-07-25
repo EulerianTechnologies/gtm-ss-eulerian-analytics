@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page
 versions:
+  - sha: 0c498f7fb724634c87dcdf9a99424435178be789
+    changeNotes: cleaner eemail + gclid remove
   - sha: 91f72c8fd856de6fc3e6f7c19e915712796f960f
     changeNotes: auto-hash clear email
   - sha: 78158045daaa8f58a258b8ee6db6f1e409130f91
