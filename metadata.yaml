@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page
 versions:
+  - sha: 78158045daaa8f58a258b8ee6db6f1e409130f91
+    changeNotes: sanitize JSON payload keys with underscore
   - sha: 3feaabd11a60b6112e621906ba37d45bcaf40204
     changeNotes: gclid support
   - sha: 1cbbc01ad87e9f0c8c383231a4c223d067abfa04
