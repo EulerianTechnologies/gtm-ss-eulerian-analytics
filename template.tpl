@@ -106,7 +106,8 @@ const A_AVOID_LIST = [
   "page_location", "page_referer", "screen_resolution",
   "ip_override", "user_agent", "client_id", "currency",
   "user_id", "user_data", "event_name", "items", "value",
-  "client_hints", "event_location"
+  "client_hints", "event_location", "GCLID", "gclid",
+  "event_source_url"
 ];
 const AVOID_REX = createRegex('^(x-)');
 
@@ -199,6 +200,13 @@ let payload = {
  "enopagedt"        : 1,
  "x-ga-measurement_id" : getData("x-ga-measurement_id")
 };
+
+/**
+ * fetch gclid
+ */
+if ( isDefined(getData("GLCID")) || isDefined(getData("gclid")) {
+  payload.gclid = getData("GLCID") || getData("gclid") || "";
+}
 
 /**
  * Handle consent
