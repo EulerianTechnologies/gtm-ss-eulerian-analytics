@@ -97,7 +97,9 @@ const createRegex = require('createRegex');
 const testRegex = require('testRegex');
 const sha256Sync = require('sha256Sync');
 
-const TEMPLATE_VERSION = '1.2.2';
+const TEMPLATE_VERSION = '1.3.1';
+
+const SANITIZE_REX = createRegex('\\s+', 'g');
 
 /**
  * avoid list of entries for copy
@@ -174,7 +176,8 @@ function augmentPayload(p, allData) {
     if ( allData.hasOwnProperty(key)
       && !isDefined(H_AVOID_LIST[key])
       && !testRegex(AVOID_REX,key) ) {
-      p[key] = allData[key];
+      let sankey = key.replace(SANITIZE_REX, '_');
+      p[sankey] = allData[key];
     }
   }
 }
@@ -186,25 +189,24 @@ function augmentPayload(p, allData) {
 let user_data = getData("user_data") || {};
 
 let payload = {
- "url"              : getData("page_location"),
- "rf"               : getData("page_referrer"),
- "ss"               : getData("screen_resolution"),
- "ereplay-ip"       : getData("ip_override"),
- "ereplay-ua"       : getData("user_agent"),
- "ereplay-time"     : makeInteger(getTimestampMillis() / 1000),
- "ereplay-platform" : "gtm-ss",
- "euidl"            : sha256Sync(getData("client_id"), {outputEncoding: 'hex'}),
- "currency"         : getData("currency"),
- "uid"              : getData("user_id"),
- "eemail"           : user_data.em || user_data.email || "",
- "enopagedt"        : 1,
- "x-ga-measurement_id" : getData("x-ga-measurement_id")
+ "url"                  : getData("page_location"),
+ "rf"                   : getData("page_referrer"),
+ "ss"                   : getData("screen_resolution"),
+ "ereplay-ip"           : getData("ip_override"),
+ "ereplay-ua"           : getData("user_agent"),
+ "ereplay-time"         : makeInteger(getTimestampMillis() / 1000),
+ "ereplay-platform"     : "gtm-ss",
+ "euidl"                : sha256Sync(getData("client_id"), {outputEncoding: 'hex'}),
+ "currency"             : getData("currency"),
+ "uid"                  : getData("user_id"),
+ "eemail"               : user_data.em || user_data.email || "",
+ "enopagedt"            : 1,
+ "x-ga-measurement_id"  : getData("x-ga-measurement_id")
 };
 
 /**
  * fetch gclid
  */
-if ( isDefined(getData("GLCID")) || isDefined(getData("gclid")) {
   payload.gclid = getData("GLCID") || getData("gclid") || "";
 }
 
