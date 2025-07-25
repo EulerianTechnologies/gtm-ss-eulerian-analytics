@@ -1,5 +1,5 @@
 homepage: https://www.eulerian.com
-documentation: https://eulerian.slite.page
+documentation: https://eulerian.slite.page/p/rkn8tRDS5jo8FZ/Google-Tag-Manager-Server-side
 versions:
   - sha: 0c498f7fb724634c87dcdf9a99424435178be789
     changeNotes: cleaner eemail + gclid remove
