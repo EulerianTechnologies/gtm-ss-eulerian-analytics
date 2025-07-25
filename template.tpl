@@ -97,7 +97,7 @@ const createRegex = require('createRegex');
 const testRegex = require('testRegex');
 const sha256Sync = require('sha256Sync');
 
-const TEMPLATE_VERSION = '1.2.1';
+const TEMPLATE_VERSION = '1.2.2';
 
 /**
  * avoid list of entries for copy
@@ -105,7 +105,8 @@ const TEMPLATE_VERSION = '1.2.1';
 const A_AVOID_LIST = [
   "page_location", "page_referer", "screen_resolution",
   "ip_override", "user_agent", "client_id", "currency",
-  "user_id", "user_data", "event_name", "items", "value"
+  "user_id", "user_data", "event_name", "items", "value",
+  "client_hints", "event_location"
 ];
 const AVOID_REX = createRegex('^(x-)');
 
