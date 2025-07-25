@@ -108,8 +108,7 @@ const A_AVOID_LIST = [
   "page_location", "page_referer", "screen_resolution",
   "ip_override", "user_agent", "client_id", "currency",
   "user_id", "user_data", "event_name", "items", "value",
-  "client_hints", "event_location", "GCLID", "gclid",
-  "event_source_url"
+  "client_hints", "event_location", "event_source_url"
 ];
 const AVOID_REX = createRegex('^(x-)');
 
@@ -188,14 +187,6 @@ function augmentPayload(p, allData) {
 
 let user_data = getData("user_data") || {};
 
-/**
- * auto-hash email address to avoid receiving raw clear email
- */
-let eemail = user_data.em || user_data.email || "";
-if ( eemail.indexOf('@') !== -1 ) {
-  eemail = sha256Sync(eemail, {outputEncoding: 'hex'});
-}
-
 let payload = {
  "url"                  : getData("page_location"),
  "rf"                   : getData("page_referrer"),
@@ -207,15 +198,20 @@ let payload = {
  "euidl"                : sha256Sync(getData("client_id"), {outputEncoding: 'hex'}),
  "currency"             : getData("currency"),
  "uid"                  : getData("user_id"),
- "eemail"               : eemail,
  "enopagedt"            : 1,
  "x-ga-measurement_id"  : getData("x-ga-measurement_id")
 };
 
 /**
- * fetch gclid
+ * auto-hash email address to avoid receiving raw clear email
  */
-  payload.gclid = getData("GLCID") || getData("gclid") || "";
+let eemail = user_data.em || user_data.email || "";
+const CLEAR_EMAIL_REX = createRegex('@', 'g');
+if ( testRegex(CLEAR_EMAIL_REX, eemail) ) {
+  eemail = sha256Sync(eemail, {outputEncoding: 'hex'});
+}
+if ( eemail.length ) {
+  payload.eemail = eemail;
 }
 
 /**
