@@ -188,6 +188,14 @@ function augmentPayload(p, allData) {
 
 let user_data = getData("user_data") || {};
 
+/**
+ * auto-hash email address to avoid receiving raw clear email
+ */
+let eemail = user_data.em || user_data.email || "";
+if ( eemail.indexOf('@') !== -1 ) {
+  eemail = sha256Sync(eemail, {outputEncoding: 'hex'});
+}
+
 let payload = {
  "url"                  : getData("page_location"),
  "rf"                   : getData("page_referrer"),
@@ -199,7 +207,7 @@ let payload = {
  "euidl"                : sha256Sync(getData("client_id"), {outputEncoding: 'hex'}),
  "currency"             : getData("currency"),
  "uid"                  : getData("user_id"),
- "eemail"               : user_data.em || user_data.email || "",
+ "eemail"               : eemail,
  "enopagedt"            : 1,
  "x-ga-measurement_id"  : getData("x-ga-measurement_id")
 };
