@@ -204,7 +204,8 @@ enoepm=1 checked?
            pmcat set? → send pmcat ✅
            pmcat not set? → call sent without consent signal
 ```
-> ⚠️ **Important:** - make sure the CMP is blocking navigation to avoid having a waiting consent status idling, you **MUST** provide the consent on all calls, if you set-up TCF and the CMP is non-blocking then traffic will be considered consented by default, you must use the Variable set-up to change this behaviour. We recommend in any case to have a blocking CMP.
+> ⚠️ **Important:** - make sure the CMP is blocking navigation to avoid having a waiting consent status idling, you **MUST** provide the consent on all calls, if you set-up TCF and the CMP is non-blocking then traffic will be considered consented by default, you can use the Variable or defaultTCString set-up to change this behaviour.
+> We recommend in any case to have a blocking CMP.
 
 ### WARNING
 
