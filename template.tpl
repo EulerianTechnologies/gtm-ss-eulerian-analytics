@@ -466,44 +466,85 @@ function buildSyntheticTCString(purposes) {
 /**
  * Read GTM native consent signals and map them to TCF purpose bits,
  * then generate a synthetic TCString.
- *
- * Mapping (GTM consent type → TCF Purposes):
- *   Purpose 1     ← ad_storage OR analytics_storage OR functionality_storage
+ *  GTM → TCF Purpose Mapping 
+ *   Purpose 1     ← ad_storage OR analytics_storage
  *   Purpose 2     ← ad_storage
  *   Purpose 3     ← ad_storage AND ad_personalization
  *   Purpose 4     ← ad_storage AND ad_personalization
- *   Purpose 5     ← personalization_storage
- *   Purpose 6     ← personalization_storage
+ *   Purpose 5     ← ad_user_data
+ *   Purpose 6     ← ad_user_data
  *   Purposes 7-10 ← analytics_storage
- *   Purposes 11-24 ← false (no GTM mapping)
+ *   Purposes 11-24 ← false (no mapping)
  */
 function getSyntheticTCString() {
-  let adStorage            = isConsentGranted('ad_storage');
-  let adPersonalization    = isConsentGranted('ad_personalization');
-  let analyticsStorage     = isConsentGranted('analytics_storage');
-  let functionalityStorage = isConsentGranted('functionality_storage');
-  let personalizationStore = isConsentGranted('personalization_storage');
+  var adStorage, analyticsStorage, adUserData, adPersonalization;
+  var source = 'all-granted';
 
-  let purposes = {
-    1:  adStorage || analyticsStorage || functionalityStorage,
+  //  Level 1: explicit event data consent fields 
+  var evAdStorage         = getData('ad_storage');
+  var evAnalyticsStorage  = getData('analytics_storage');
+  var evAdUserData        = getData('ad_user_data');
+  var evAdPersonalization = getData('ad_personalization');
+
+  if ( evAdStorage || evAnalyticsStorage || evAdUserData || evAdPersonalization ) {
+    adStorage         = evAdStorage         === 'granted';
+    analyticsStorage  = evAnalyticsStorage  === 'granted';
+    adUserData        = evAdUserData        === 'granted';
+    adPersonalization = evAdPersonalization === 'granted';
+    source = 'event-data-fields';
+
+  } else {
+    // Level 2: gcd parameter ──
+    var gcd = getData('gcd') || '';
+    var grantedLetters = 'nrtv';
+
+    if ( gcd.length >= 9 ) {
+      adStorage         = grantedLetters.indexOf(gcd.charAt(2)) >= 0;
+      analyticsStorage  = grantedLetters.indexOf(gcd.charAt(4)) >= 0;
+      adUserData        = grantedLetters.indexOf(gcd.charAt(6)) >= 0;
+      adPersonalization = grantedLetters.indexOf(gcd.charAt(8)) >= 0;
+      source = 'gcd';
+
+    } else {
+      // Level 3: x-ga-gcs (2 signals only) 
+      var gcs = getData('x-ga-gcs') || '';
+
+      if ( gcs.length >= 4 && gcs.charAt(0) === 'G' ) {
+        adStorage         = gcs.charAt(2) === '1';
+        analyticsStorage  = gcs.charAt(3) === '1';
+        adUserData        = false; // not encoded in x-ga-gcs
+        adPersonalization = false; // not encoded in x-ga-gcs
+        source = 'x-ga-gcs';
+
+      } else {
+        // ── Level 4: all granted ──
+        adStorage         = true;
+        analyticsStorage  = true;
+        adUserData        = true;
+        adPersonalization = true;
+      }
+    }
+  }
+
+  log('EA TCF: Generating synthetic TCString | source:', source,
+      '| ad_storage:', adStorage,
+      '| analytics_storage:', analyticsStorage,
+      '| ad_user_data:', adUserData,
+      '| ad_personalization:', adPersonalization);
+
+  var purposes = {
+    1:  adStorage || analyticsStorage,
     2:  adStorage,
     3:  adStorage && adPersonalization,
     4:  adStorage && adPersonalization,
-    5:  personalizationStore,
-    6:  personalizationStore,
+    5:  adUserData,
+    6:  adUserData,
     7:  analyticsStorage,
     8:  analyticsStorage,
     9:  analyticsStorage,
     10: analyticsStorage
     // 11-24: undefined → false in buildSyntheticTCString
   };
-
-  log('EA TCF: Generating synthetic TCString from GTM consent signals',
-      '| ad_storage:', adStorage,
-      '| analytics_storage:', analyticsStorage,
-      '| ad_personalization:', adPersonalization,
-      '| personalization_storage:', personalizationStore,
-      '| functionality_storage:', functionalityStorage);
 
   return buildSyntheticTCString(purposes);
 }
