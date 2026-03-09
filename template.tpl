@@ -553,6 +553,7 @@ function getSyntheticTCString() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 let user_data = getData("user_data") || {};
+let client_id = getData("client_id") || '';
 
 let payload = {
  "url"                  : getData("page_location"),
@@ -562,7 +563,7 @@ let payload = {
  "ereplay-ua"           : getData("user_agent"),
  "ereplay-time"         : makeInteger(getTimestampMillis() / 1000),
  "ereplay-platform"     : "gtm-ss",
- "euidl"                : sha256Sync(getData("client_id")),
+ "euidl"                : sha256Sync(client_id, {outputEncoding: 'hex'}),
  "currency"             : getData("currency"),
  "uid"                  : getData("user_id"),
  "enopagedt"            : 1,
