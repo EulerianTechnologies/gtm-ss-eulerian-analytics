@@ -298,21 +298,21 @@ function base64urlToBytes(str) {
   while (base64.length % 4) {
     base64 += '=';
   }
-  let bytes = [];
+  let bytesV = [];
   for (let i = 0; i < base64.length; i += 4) {
     let b0 = chars.indexOf(base64[i]);
     let b1 = chars.indexOf(base64[i+1]);
     let b2 = chars.indexOf(base64[i+2]);
     let b3 = chars.indexOf(base64[i+3]);
-    bytes.push((b0 << 2) | (b1 >> 4));
+    bytesV.push((b0 << 2) | (b1 >> 4));
     if (base64[i+2] !== '=') {
-      bytes.push(((b1 & 15) << 4) | (b2 >> 2));
+      bytesV.push(((b1 & 15) << 4) | (b2 >> 2));
     }
     if (base64[i+3] !== '=') {
-      bytes.push(((b2 & 3) << 6) | b3);
+      bytesV.push(((b2 & 3) << 6) | b3);
     }
   }
-  return bytes;
+  return bytesV;
 }
 
 /**
@@ -348,7 +348,7 @@ function getTCStringFromCookie(defaultTCString) {
   let result = getCookieValues('euconsent-v2');
 
   if (result && result.length) {
-    let tc = result[0];
+    let tc = result[0] || '';
     if ( isValidTCString(tc) ) {
       return tc.trim();
     }
@@ -451,16 +451,16 @@ function buildSyntheticTCString(purposes) {
   }
 
   // Pack bits into bytes
-  let bytes = [];
+  let bytesV = [];
   for (let i = 0; i < bits.length; i += 8) {
-    let byte = 0;
+    let byteV = 0;
     for (let j = 0; j < 8; j++) {
-      byte = (byte << 1) | bits[i + j];
+      byteV = (byteV << 1) | bits[i + j];
     }
-    bytes.push(byte);
+    bytesV.push(byteV);
   }
 
-  return bytesToBase64url(bytes);
+  return bytesToBase64url(bytesV);
 }
 
 /**
@@ -757,8 +757,135 @@ ___SERVER_PERMISSIONS___
 
 
 ___TESTS___
+scenarios:
+- name: 'Consent - enoepm=1 sends enoepm flag and no TCString'
+  code: |-
+    // Mock event data: a simple page_view
+    mock('getAllEventData', function() {
+      return {
+        event_name: 'page_view',
+        page_location: 'https://www.example.com/',
+        page_referrer: 'https://www.google.com/',
+        ip_override: '1.2.3.4',
+        user_agent: 'Mozilla/5.0',
+        client_id: 'abc123',
+        screen_resolution: '1920x1080'
+      };
+    });
 
-scenarios: []
+    mock('getTimestampMillis', function() { return 1700000000000; });
+    mock('sha256Sync', function(val) { return 'hashed_' + val; });
+
+    // Capture the outgoing request body
+    var capturedBody;
+    mock('sendHttpRequest', function(url, callback, options, body) {
+      capturedBody = JSON.parse(body);
+      callback(200, {}, '');
+    });
+
+    // Run with enoepm=1 checked
+    runCode({
+      targetHost: 'et1.eulerian.net',
+      enoepm: true,
+      tcfEnabled: false
+    });
+
+    // enoepm=1 must be in payload
+    assertThat(capturedBody.enoepm).isEqualTo(1);
+
+    // No TCString should be present
+    assertThat(capturedBody.gdpr).isUndefined();
+    assertThat(capturedBody.gdpr_consent).isUndefined();
+
+    // No pmcat
+    assertThat(capturedBody.pmcat).isUndefined();
+
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: 'Consent - TCF cookie source sends gdpr=1 and gdpr_consent from cookie'
+  code: |-
+    var VALID_TC_STRING = 'CPcqzAAPcqzAAAHABBENCkCgAAAAAAAAAAAAAFgQAAA';
+
+    mock('getAllEventData', function() {
+      return {
+        event_name: 'page_view',
+        page_location: 'https://www.example.com/',
+        ip_override: '1.2.3.4',
+        user_agent: 'Mozilla/5.0',
+        client_id: 'abc123'
+      };
+    });
+
+    mock('getTimestampMillis', function() { return 1700000000000; });
+    mock('sha256Sync', function(val) { return 'hashed_' + val; });
+
+    // Return a valid TCString from the euconsent-v2 cookie
+    mock('getCookieValues', function(name) {
+      if (name === 'euconsent-v2') return [VALID_TC_STRING];
+      return [];
+    });
+
+    var capturedBody;
+    mock('sendHttpRequest', function(url, callback, options, body) {
+      capturedBody = JSON.parse(body);
+      callback(200, {}, '');
+    });
+
+    runCode({
+      targetHost: 'et1.eulerian.net',
+      enoepm: false,
+      tcfEnabled: true,
+      tcfSource: 'cookie',
+      tcfDefaultString: ''
+    });
+
+    // gdpr=1 and the cookie TCString must be forwarded
+    assertThat(capturedBody.gdpr).isEqualTo(1);
+    assertThat(capturedBody.gdpr_consent).isEqualTo(VALID_TC_STRING);
+
+    // No enoepm, no pmcat
+    assertThat(capturedBody.enoepm).isUndefined();
+    assertThat(capturedBody.pmcat).isUndefined();
+
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: 'Consent - pmcat only when enoepm and TCF are both off'
+  code: |-
+    mock('getAllEventData', function() {
+      return {
+        event_name: 'page_view',
+        page_location: 'https://www.example.com/',
+        ip_override: '1.2.3.4',
+        user_agent: 'Mozilla/5.0',
+        client_id: 'abc123'
+      };
+    });
+
+    mock('getTimestampMillis', function() { return 1700000000000; });
+    mock('sha256Sync', function(val) { return 'hashed_' + val; });
+
+    var capturedBody;
+    mock('sendHttpRequest', function(url, callback, options, body) {
+      capturedBody = JSON.parse(body);
+      callback(200, {}, '');
+    });
+
+    runCode({
+      targetHost: 'et1.eulerian.net',
+      enoepm: false,
+      tcfEnabled: false,
+      'consent-pmcat': '1-3'
+    });
+
+    // pmcat must be forwarded
+    assertThat(capturedBody.pmcat).isEqualTo('1-3');
+
+    // No enoepm, no TCString
+    assertThat(capturedBody.enoepm).isUndefined();
+    assertThat(capturedBody.gdpr).isUndefined();
+    assertThat(capturedBody.gdpr_consent).isUndefined();
+
+    assertApi('gtmOnSuccess').wasCalled();
 
 
 ___NOTES___
