@@ -193,7 +193,6 @@ const createRegex = require('createRegex');
 const testRegex = require('testRegex');
 const sha256Sync = require('sha256Sync');
 const getCookieValues = require('getCookieValues');
-const isConsentGranted = require('isConsentGranted');
 const log = require('logToConsole');
 
 const TEMPLATE_VERSION = '1.4.0';
