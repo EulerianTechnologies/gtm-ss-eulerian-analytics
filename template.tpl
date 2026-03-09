@@ -740,10 +740,10 @@ ___SERVER_PERMISSIONS___
       },
       "param": [
         {
-          "key": "cookies",
+          "key": "cookieAccess",
           "value": {
             "type": 1,
-	    "string" : "any"
+	        "string" : "any"
           }
         }
       ]
