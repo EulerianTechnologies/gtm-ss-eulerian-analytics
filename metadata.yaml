@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page/p/rkn8tRDS5jo8FZ/Google-Tag-Manager-Server-side
 versions:
+  - sha: 1fab837cc2f79ca7901b1329f566f5a2b3953306
+    changeNotes: better management for automated TCF consent + sha256 fix
   - sha: 4b41bb6c242ddd401cd5bae24398611ee4b92a9e
     changeNotes: fix cookieAccess
   - sha: 636ad473785b9e27b23091068b2f03b090533cdf
