@@ -696,35 +696,38 @@ switch ( event_name ) {
  *  - targetHost has dots -> new version -> do not touch it
  */
 
-let targetHost = getData("targetHost");
-if ( targetHost.indexOf('.') < 0 ) {
-  targetHost += ".eulerian.net";
-}
-let targetURL = "https://"+targetHost+"/collectorjson/-/"+getTimestampMillis();
+let targetHost = getData("targetHost") || '';
 
-/**
- * Send network call
- */
-sendHttpRequest(
-  targetURL,
-  (statusCode, headers, body) => {
-    if (statusCode >= 200 && statusCode < 300) {
-      data.gtmOnSuccess();
-    } else {
-      data.gtmOnFailure();
-    }
-  },
-  {
-    headers: {
-      "X-Eulerian-Client": "GTM-SS",
-      "X-Forwarded-For": payload["ereplay-ip"],
-      "Content-Type": "application/json; charset=UTF-8"
+if ( targetHost.length ) {
+  if ( targetHost.indexOf('.') < 0 ) {
+    targetHost += ".eulerian.net";
+  }
+  let targetURL = "https://"+targetHost+"/collectorjson/-/"+getTimestampMillis();
+
+  /**
+   * Send network call
+   */
+  sendHttpRequest(
+    targetURL,
+    (statusCode, headers, body) => {
+      if (statusCode >= 200 && statusCode < 300) {
+        data.gtmOnSuccess();
+      } else {
+        data.gtmOnFailure();
+      }
     },
-    method: "POST",
-    timeout: 500
-  },
-  JSON.stringify(payload)
-);
+    {
+      headers: {
+        "X-Eulerian-Client": "GTM-SS",
+        "X-Forwarded-For": payload["ereplay-ip"],
+        "Content-Type": "application/json; charset=UTF-8"
+      },
+      method: "POST",
+      timeout: 500
+    },
+    JSON.stringify(payload)
+  );
+}
 
 
 
