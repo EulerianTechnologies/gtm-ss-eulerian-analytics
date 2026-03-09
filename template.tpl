@@ -797,10 +797,10 @@ ___SERVER_PERMISSIONS___
 
 
 ___TESTS___
+
 scenarios:
 - name: 'Consent - enoepm=1 sends enoepm flag and no TCString'
   code: |-
-    // Mock event data: a simple page_view
     mock('getAllEventData', function() {
       return {
         event_name: 'page_view',
@@ -816,29 +816,26 @@ scenarios:
     mock('getTimestampMillis', function() { return 1700000000000; });
     mock('sha256Sync', function(val) { return 'hashed_' + val; });
 
-    // Capture the outgoing request body
-    var capturedBody;
+    // Capture payload before JSON.stringify consumes it
+    var capturedPayload;
+    mock('JSON', {
+      stringify: function(obj) { capturedPayload = obj; return '{}'; },
+      parse: function(str) { return {}; }
+    });
     mock('sendHttpRequest', function(url, callback, options, body) {
-      capturedBody = JSON.parse(body);
       callback(200, {}, '');
     });
 
-    // Run with enoepm=1 checked
     runCode({
       targetHost: 'et1.eulerian.net',
       enoepm: true,
       tcfEnabled: false
     });
 
-    // enoepm=1 must be in payload
-    assertThat(capturedBody.enoepm).isEqualTo(1);
-
-    // No TCString should be present
-    assertThat(capturedBody.gdpr).isUndefined();
-    assertThat(capturedBody.gdpr_consent).isUndefined();
-
-    // No pmcat
-    assertThat(capturedBody.pmcat).isUndefined();
+    assertThat(capturedPayload.enoepm).isEqualTo(1);
+    assertThat(capturedPayload.gdpr).isUndefined();
+    assertThat(capturedPayload.gdpr_consent).isUndefined();
+    assertThat(capturedPayload.pmcat).isUndefined();
 
     assertApi('gtmOnSuccess').wasCalled();
 
@@ -859,15 +856,17 @@ scenarios:
     mock('getTimestampMillis', function() { return 1700000000000; });
     mock('sha256Sync', function(val) { return 'hashed_' + val; });
 
-    // Return a valid TCString from the euconsent-v2 cookie
     mock('getCookieValues', function(name) {
       if (name === 'euconsent-v2') return [VALID_TC_STRING];
       return [];
     });
 
-    var capturedBody;
+    var capturedPayload;
+    mock('JSON', {
+      stringify: function(obj) { capturedPayload = obj; return '{}'; },
+      parse: function(str) { return {}; }
+    });
     mock('sendHttpRequest', function(url, callback, options, body) {
-      capturedBody = JSON.parse(body);
       callback(200, {}, '');
     });
 
@@ -879,13 +878,10 @@ scenarios:
       tcfDefaultString: ''
     });
 
-    // gdpr=1 and the cookie TCString must be forwarded
-    assertThat(capturedBody.gdpr).isEqualTo(1);
-    assertThat(capturedBody.gdpr_consent).isEqualTo(VALID_TC_STRING);
-
-    // No enoepm, no pmcat
-    assertThat(capturedBody.enoepm).isUndefined();
-    assertThat(capturedBody.pmcat).isUndefined();
+    assertThat(capturedPayload.gdpr).isEqualTo(1);
+    assertThat(capturedPayload.gdpr_consent).isEqualTo(VALID_TC_STRING);
+    assertThat(capturedPayload.enoepm).isUndefined();
+    assertThat(capturedPayload.pmcat).isUndefined();
 
     assertApi('gtmOnSuccess').wasCalled();
 
@@ -904,9 +900,12 @@ scenarios:
     mock('getTimestampMillis', function() { return 1700000000000; });
     mock('sha256Sync', function(val) { return 'hashed_' + val; });
 
-    var capturedBody;
+    var capturedPayload;
+    mock('JSON', {
+      stringify: function(obj) { capturedPayload = obj; return '{}'; },
+      parse: function(str) { return {}; }
+    });
     mock('sendHttpRequest', function(url, callback, options, body) {
-      capturedBody = JSON.parse(body);
       callback(200, {}, '');
     });
 
@@ -917,13 +916,62 @@ scenarios:
       'consent-pmcat': '1-3'
     });
 
-    // pmcat must be forwarded
-    assertThat(capturedBody.pmcat).isEqualTo('1-3');
+    assertThat(capturedPayload.pmcat).isEqualTo('1-3');
+    assertThat(capturedPayload.enoepm).isUndefined();
+    assertThat(capturedPayload.gdpr).isUndefined();
+    assertThat(capturedPayload.gdpr_consent).isUndefined();
 
-    // No enoepm, no TCString
-    assertThat(capturedBody.enoepm).isUndefined();
-    assertThat(capturedBody.gdpr).isUndefined();
-    assertThat(capturedBody.gdpr_consent).isUndefined();
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: 'Consent - TCF cookie absent falls back to synthetic TCString via gcd'
+  code: |-
+    mock('getAllEventData', function() {
+      return {
+        event_name: 'page_view',
+        page_location: 'https://www.example.com/',
+        ip_override: '1.2.3.4',
+        user_agent: 'Mozilla/5.0',
+        client_id: 'abc123',
+        // gcd: all 4 signals updated to granted after default denied
+        // format: 11 + (letter at pos 2,4,6,8) + separators + suffix
+        // 13r3r3r3r5 = ad_storage:r, analytics:r, ad_user_data:r, ad_personalization:r (all granted)
+        gcd: '13r3r3r3r5'
+      };
+    });
+
+    mock('getTimestampMillis', function() { return 1700000000000; });
+    mock('makeInteger', function(val) {
+      var n = val < 0 ? -1 : 1;
+      return n * (val < 0 ? Math.ceil(val) : Math.floor(val));
+    });
+    mock('sha256Sync', function(val) { return 'hashed_' + val; });
+
+    // Cookie is absent — triggers synthetic fallback
+    mock('getCookieValues', function(name) { return []; });
+
+    var capturedPayload;
+    mock('JSON', {
+      stringify: function(obj) { capturedPayload = obj; return '{}'; },
+      parse: function(str) { return {}; }
+    });
+    mock('sendHttpRequest', function(url, callback, options, body) {
+      callback(200, {}, '');
+    });
+
+    runCode({
+      targetHost: 'et1.eulerian.net',
+      enoepm: false,
+      tcfEnabled: true,
+      tcfSource: 'cookie',
+      tcfDefaultString: ''
+    });
+
+    // gdpr=1 and a non-empty base64url synthetic TCString
+    assertThat(capturedPayload.gdpr).isEqualTo(1);
+    assertThat(capturedPayload.gdpr_consent).isString();
+    assertThat(capturedPayload.gdpr_consent.length).isGreaterThan(20);
+    assertThat(capturedPayload.enoepm).isUndefined();
+    assertThat(capturedPayload.pmcat).isUndefined();
 
     assertApi('gtmOnSuccess').wasCalled();
 
