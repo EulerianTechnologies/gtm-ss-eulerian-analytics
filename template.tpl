@@ -562,7 +562,7 @@ let payload = {
  "ereplay-ua"           : getData("user_agent"),
  "ereplay-time"         : makeInteger(getTimestampMillis() / 1000),
  "ereplay-platform"     : "gtm-ss",
- "euidl"                : sha256Sync(getData("client_id"), {outputEncoding: 'hex'}),
+ "euidl"                : sha256Sync(getData("client_id")),
  "currency"             : getData("currency"),
  "uid"                  : getData("user_id"),
  "enopagedt"            : 1,
