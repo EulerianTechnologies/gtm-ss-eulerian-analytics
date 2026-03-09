@@ -35,15 +35,18 @@ If you don't already have an account, you can try our freemium platform through 
 #### global mapping
 
 The following global parameters are always provided to each call sent to us as long as they exists in the original datalayer :
-- **page_location** mapped to **url**
-- **page_referrer** mapped to **rf**
-- **screen_resolution** mapped to **ss**
-- **ip_override** mapped to **ereplay-ip**
-- **user_agent** mapped to **ereplay-ua**
-- **client_id** mapped to **euidl**
-- **currency** mapped to **currency**
-- **user_id** mapped to **uid**
-- **user_data.sha256_email_address** or **user_data.em** mapped to **email**
+
+| Original Parameter | Mapped Parameter |
+|---|---|
+| `page_location` | `url` |
+| `page_referrer` | `rf` |
+| `screen_resolution` | `ss` |
+| `ip_override` | `ereplay-ip` |
+| `user_agent` | `ereplay-ua` |
+| `client_id` | `euidl` |
+| `currency` | `currency` |
+| `user_id` | `uid` |
+| `user_data.sha256_email_address` or `user_data.em` | `email` |
 
 For each call we auto-copy all additionnal parameters of the event prefixed by **ga-**
 
