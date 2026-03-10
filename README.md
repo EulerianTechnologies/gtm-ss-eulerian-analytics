@@ -166,6 +166,11 @@ The synthetic string is a minimal valid **TCF v2 Core String** with the followin
 - **All vendors** (IDs 1–1700) are granted consent via range encoding
 - **No Legitimate Interest** — LI sections are zeroed
 - `CmpId = 0` — this is a synthetic string, not issued by a registered CMP
+- We apply a multi-level processing to generate the synthetic TCF :
+   - get information from the `dataLayer` and signals sent through it
+   - analyze the `gcd` payload
+   - analyze the `x-ga-gcs` payload
+   - if all fail consider the consent is `granted` for all
 
 > ⚠️ **Important:** The synthetic TCString is a best-effort fallback for sites without a CMP or where the TCString is temporarily unavailable. It is **not a substitute for a real CMP** on sites legally required to collect explicit consent under GDPR. It should be treated as a signal-forwarding mechanism only.
 
