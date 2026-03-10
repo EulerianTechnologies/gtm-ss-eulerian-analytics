@@ -351,18 +351,18 @@ function getTCStringFromCookie(defaultTCString) {
     if ( isValidTCString(tc) ) {
       return tc.trim();
     }
-    log('EA TCF: Cookie value invalid or too short:', tc);
+    log('Eulerian TCF: Cookie value invalid or too short:', tc);
   } else {
-    log('EA TCF: euconsent-v2 cookie not found or returned empty array');
+    log('Eulerian TCF: euconsent-v2 cookie not found or returned empty array');
   }
 
   // Fallback: customer-provided default TCString
   if ( isValidTCString(defaultTCString) ) {
-    log('EA TCF: Using customer-provided fallback TCString');
+    log('Eulerian TCF: Using customer-provided fallback TCString');
     return defaultTCString.trim();
   }
 
-  log('EA TCF: No valid TCString and no valid fallback provided');
+  log('Eulerian TCF: No valid TCString and no valid fallback provided');
   return null;
 }
 
@@ -378,7 +378,7 @@ function getTCStringFromVariable(variableValue) {
   if ( isValidTCString(variableValue) ) {
     return variableValue.trim();
   }
-  log('EA TCF: GTM variable resolved to an empty or invalid TCString:', variableValue);
+  log('Eulerian TCF: GTM variable resolved to an empty or invalid TCString:', variableValue);
   return null;
 }
 
@@ -516,7 +516,7 @@ function getSyntheticTCString() {
         source = 'x-ga-gcs';
 
       } else {
-        // ── Level 4: all granted ──
+        // Level 4: all granted
         adStorage         = true;
         analyticsStorage  = true;
         adUserData        = true;
@@ -525,7 +525,7 @@ function getSyntheticTCString() {
     }
   }
 
-  log('EA TCF: Generating synthetic TCString | source:', source,
+  log('Eulerian TCF: Generating synthetic TCString | source:', source,
       '| ad_storage:', adStorage,
       '| analytics_storage:', analyticsStorage,
       '| ad_user_data:', adUserData,
@@ -595,7 +595,7 @@ if ( eemail.length ) {
  */
 if ( getData("enoepm") ) {
   payload.enoepm = 1;
-  log('EA Consent: enoepm=1, all traffic consented');
+  log('Eulerian Consent: enoepm=1, all traffic consented');
 
 // TCF v2
 } else if ( getData("tcfEnabled") ) {
@@ -727,6 +727,8 @@ if ( targetHost.length ) {
     },
     JSON.stringify(payload)
   );
+} else {
+  log('Eulerian - no targetHost provided - exit silently.');
 }
 
 
