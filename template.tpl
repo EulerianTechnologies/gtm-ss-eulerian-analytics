@@ -723,7 +723,7 @@ if ( targetHost.length ) {
         "Content-Type": "application/json; charset=UTF-8"
       },
       method: "POST",
-      timeout: 500
+      timeout: 3000
     },
     JSON.stringify(payload)
   );
