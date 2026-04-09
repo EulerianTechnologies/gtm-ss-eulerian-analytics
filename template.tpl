@@ -237,17 +237,43 @@ function isDefined(val) {
   return null;
 }
 
+function normalizeName(name) {
+  let repChar   = createRegex('[^a-z0-9_]', 'g');
+  return (name || '')
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(repChar, '_')
+    .substring(0, 100);          
+}
+
+function getProductItemId ( id, name, idx ) {
+ if ( id !== '' ) {
+    return id;
+  }
+
+  // fallback to normalized name
+  if ( name !== '' ) {
+    return normalizeName(name);
+  }
+
+  return 'unknown_item_id_' + idx;
+}
+
 function items2product(items, isRemove) {
   return (items || []).map((item,idx) => {
     // if remove_from_cart we invert the quantity
     let rqty = item.quantity || item.item_quantity || 0;
     let qty = isRemove ? rqty * -1 : rqty;
+    let id = item.id || item.item_id || '';
+    let name = item.name || item.item_name || '';
+    let price = item.price || item.item_price || 0;
 
     let h_prd = {
-      "ref"       : item.item_id,
-      "name"      : item.item_name || '',
+      "ref"       : getProductItemId(id, name, idx),
+      "name"      : name,
       "quantity"  : qty,
-      "amount"    : item.price || item.item_price || 0,
+      "amount"    : price,
       "params"    : {}
     };
     // work on other params
