@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page/p/rkn8tRDS5jo8FZ/Google-Tag-Manager-Server-side
 versions:
+  - sha: 381e37d8aafa269d893cfa9cfdeaeef5d51a79af
+    changeNotes: fallback for product item_id if not provided
   - sha: 99602feec311df40aa86d9475e7bc72c54249505
     changeNotes: increase timeout in case of cold cache load coming from GTMSS
   - sha: d9f618302df5dba5eba3484c82ed0af2a7733afc
