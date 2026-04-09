@@ -50,6 +50,8 @@ The following global parameters are always provided to each call sent to us as l
 
 For each call we auto-copy all additionnal parameters of the event prefixed by **ga-**
 
+In case the **product** dataLayer does not provide an **id** but a **name** we will normalize the name so that a faked id is generated to avoid the call to fail.
+
 #### page_view
 
 Standard call done
