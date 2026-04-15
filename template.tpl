@@ -189,13 +189,15 @@ const getAllEventData = require('getAllEventData');
 const getTimestampMillis = require('getTimestampMillis');
 const JSON = require('JSON');
 const makeInteger = require('makeInteger');
+const makeString = require('makeString');
+const makeNumber = require('makeNumber');
 const createRegex = require('createRegex');
 const testRegex = require('testRegex');
 const sha256Sync = require('sha256Sync');
 const getCookieValues = require('getCookieValues');
 const log = require('logToConsole');
 
-const TEMPLATE_VERSION = '1.4.0';
+const TEMPLATE_VERSION = '1.4.1';
 
 const SANITIZE_REX = createRegex('\\s+', 'g');
 
@@ -244,7 +246,7 @@ function normalizeName(name) {
     .toLowerCase()
     .trim()
     .replace(repChar, '_')
-    .substring(0, 100);          
+    .substring(0, 100);
 }
 
 function getProductItemId ( id, name, idx ) {
@@ -263,11 +265,11 @@ function getProductItemId ( id, name, idx ) {
 function items2product(items, isRemove) {
   return (items || []).map((item,idx) => {
     // if remove_from_cart we invert the quantity
-    let rqty = item.quantity || item.item_quantity || 0;
+    let rqty = makeNumber(item.quantity || item.item_quantity || 0);
     let qty = isRemove ? rqty * -1 : rqty;
-    let id = item.id || item.item_id || '';
-    let name = item.name || item.item_name || '';
-    let price = item.price || item.item_price || 0;
+    let id = makeString(item.id || item.item_id || '');
+    let name = makeString(item.name || item.item_name || '');
+    let price = makeNumber(item.price || item.item_price || 0);
 
     let h_prd = {
       "ref"       : getProductItemId(id, name, idx),
@@ -317,9 +319,9 @@ function isValidTCString(val) {
  */
 function base64urlToBytes(str) {
   let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-  let repDash 	= createRegex('-', 'g');
+  let repDash	  = createRegex('-', 'g');
   let repUnder	= createRegex('_', 'g');
-  let base64 = str.replace(repDash, '+').replace(repUnder, '/');
+  let base64    = str.replace(repDash, '+').replace(repUnder, '/');
   while (base64.length % 4) {
     base64 += '=';
   }
@@ -353,9 +355,9 @@ function bytesToBase64url(bytes) {
     base64 += (i+1 < bytes.length) ? chars[((b1 & 15) << 2) | (b2 >> 6)] : '=';
     base64 += (i+2 < bytes.length) ? chars[b2 & 63] : '=';
   }
-  let repPlus 	= createRegex('+', 'g');
+  let repPlus	  = createRegex('+', 'g');
   let repSlash	= createRegex('/', 'g');
-  let repEq	= createRegex('=', 'g');
+  let repEq	    = createRegex('=', 'g');
 
   return base64
     .replace(repPlus, '-')
@@ -373,7 +375,7 @@ function getTCStringFromCookie(defaultTCString) {
   let result = getCookieValues('euconsent-v2');
 
   if (result && result.length) {
-    let tc = result[0] || '';
+    let tc = makeString(result[0] || '');
     if ( isValidTCString(tc) ) {
       return tc.trim();
     }
@@ -383,13 +385,14 @@ function getTCStringFromCookie(defaultTCString) {
   }
 
   // Fallback: customer-provided default TCString
-  if ( isValidTCString(defaultTCString) ) {
+  let fallback = makeString(defaultTCString || '');
+  if ( isValidTCString(fallback) ) {
     log('Eulerian TCF: Using customer-provided fallback TCString');
-    return defaultTCString.trim();
+    return fallback.trim();
   }
 
   log('Eulerian TCF: No valid TCString and no valid fallback provided');
-  return null;
+  return '';
 }
 
 /**
@@ -401,11 +404,12 @@ function getTCStringFromCookie(defaultTCString) {
  * Returns null if the resolved value is empty or invalid.
  */
 function getTCStringFromVariable(variableValue) {
-  if ( isValidTCString(variableValue) ) {
-    return variableValue.trim();
+  let str = makeString(variableValue || '').trim();
+  if ( isValidTCString(str) ) {
+    return str.trim();
   }
-  log('Eulerian TCF: GTM variable resolved to an empty or invalid TCString:', variableValue);
-  return null;
+  log('Eulerian TCF: GTM variable resolved to an empty or invalid TCString:',str);
+  return '';
 }
 
 /**
@@ -424,9 +428,17 @@ function buildSyntheticTCString(purposes) {
     }
   }
 
-  function addLetters(str) {
+  /**
+   * Safely add letters (A-Z) using makeString
+   */
+  function addLetters(input) {
+    let str = makeString(input || '');
+
     for (let i = 0; i < str.length; i++) {
-      addBits(str.charCodeAt(i) - 65, 6);
+      const code = str.charCodeAt(i);
+      if (code >= 65 && code <= 90) {   // A-Z only
+        addBits(code - 65, 6);
+      }
     }
   }
 
@@ -505,7 +517,7 @@ function getSyntheticTCString() {
   var adStorage, analyticsStorage, adUserData, adPersonalization;
   var source = 'all-granted';
 
-  //  Level 1: explicit event data consent fields 
+  //  Level 1: explicit event data consent fields
   var evAdStorage         = getData('ad_storage');
   var evAnalyticsStorage  = getData('analytics_storage');
   var evAdUserData        = getData('ad_user_data');
@@ -599,7 +611,7 @@ let payload = {
 /**
  * auto-hash email address to avoid receiving raw clear email
  */
-let eemail = user_data.em || user_data.email || "";
+let eemail = makeString(user_data.em || user_data.email || '');
 const CLEAR_EMAIL_REX = createRegex('@', 'g');
 if ( testRegex(CLEAR_EMAIL_REX, eemail) ) {
   eemail = sha256Sync(eemail, {outputEncoding: 'hex'});
@@ -625,8 +637,8 @@ if ( getData("enoepm") ) {
 
 // TCF v2
 } else if ( getData("tcfEnabled") ) {
-  let tcString = null;
-  let tcfSource = getData("tcfSource");
+  let tcString = '';
+  let tcfSource = makeString(getData("tcfSource") || '').trim().toLowerCase();
 
   if ( tcfSource === 'cookie' ) {
     // Read from euconsent-v2 cookie, fall back to customer-provided default
@@ -637,10 +649,11 @@ if ( getData("enoepm") ) {
     // The variable picker in the tag UI populates tcfVariableString with
     // the resolved value before the sandboxed JS runs
     tcString = getTCStringFromVariable(getData("tcfVariableString"));
-
   }
 
-  if ( !tcString ) {
+   // If still no valid TCString → use synthetic
+  if (!isValidTCString(tcString)) {
+    log('Eulerian TCF: No valid TCString from chosen source → generating synthetic');
     tcString = getSyntheticTCString();
   }
 
@@ -649,10 +662,10 @@ if ( getData("enoepm") ) {
 
 // pmcat
 } else if ( isDefined(getData("consent-pmcat")) ) {
-  payload.pmcat = getData("consent-pmcat");
+  payload.pmcat = makeString(getData("consent-pmcat") || '');
 }
 
-let event_name = getData("event_name");
+let event_name = makeString(getData("event_name") || 'no_event_name');
 payload["ga-event_name"] = event_name;
 
 let gaEData = getAllEventData() || {};
@@ -722,7 +735,7 @@ switch ( event_name ) {
  *  - targetHost has dots -> new version -> do not touch it
  */
 
-let targetHost = getData("targetHost") || '';
+let targetHost = makeString(getData("targetHost") || '').trim();
 
 if ( targetHost.length ) {
   if ( targetHost.indexOf('.') < 0 ) {
