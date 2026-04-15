@@ -311,7 +311,8 @@ function augmentPayload(p, allData) {
  * Shared validation: a plausible TCString must be a non-empty string >= 20 chars.
  */
 function isValidTCString(val) {
-  return val && typeof val === 'string' && val.trim().length >= 20;
+  let str = makeString(val || '').trim();
+  return str && typeof str === 'string' && str.trim().length >= 20;
 }
 
 /**
@@ -377,18 +378,19 @@ function getTCStringFromCookie(defaultTCString) {
   if (result && result.length) {
     let tc = makeString(result[0] || '');
     if ( isValidTCString(tc) ) {
+	  log('Eulerian TCF: euconsent-v2 cookie value is valid TCString:', tc);
       return tc.trim();
     }
-    log('Eulerian TCF: Cookie value invalid or too short:', tc);
+    log('Eulerian TCF: euconsent-v2 cookie value invalid or too short:', tc);
   } else {
     log('Eulerian TCF: euconsent-v2 cookie not found or returned empty array');
   }
 
   // Fallback: customer-provided default TCString
-  let fallback = makeString(defaultTCString || '');
+  let fallback = makeString(defaultTCString || '').trim();
   if ( isValidTCString(fallback) ) {
-    log('Eulerian TCF: Using customer-provided fallback TCString');
-    return fallback.trim();
+    log('Eulerian TCF: Using valid customer-provided fallback TCString:', fallback);
+    return fallback;
   }
 
   log('Eulerian TCF: No valid TCString and no valid fallback provided');
@@ -406,7 +408,8 @@ function getTCStringFromCookie(defaultTCString) {
 function getTCStringFromVariable(variableValue) {
   let str = makeString(variableValue || '').trim();
   if ( isValidTCString(str) ) {
-    return str.trim();
+    log('Eulerian TCF: GTM variable resolved to a valid TCString:', str);
+    return str;
   }
   log('Eulerian TCF: GTM variable resolved to an empty or invalid TCString:',str);
   return '';
