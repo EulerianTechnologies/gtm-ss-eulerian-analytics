@@ -471,7 +471,7 @@ function buildSyntheticTCString(purposes) {
 
   // PurposeOneTreatment + PublisherCC ---
   addBits(0, 1);    // PurposeOneTreatment (offset 200)
-  addLetters('AA'); // PublisherCC         (offset 201)
+  addLetters('FR'); // PublisherCC         (offset 201)
 
   // Vendor Consents: ALL vendors granted via single range 1 → MAX_VENDOR_ID ---
   addBits(MAX_VENDOR_ID, 16); // MaxVendorId
