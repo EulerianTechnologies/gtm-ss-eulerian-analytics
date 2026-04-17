@@ -470,6 +470,16 @@ function buildSyntheticTCString(purposes) {
   // --- Vendor LI: empty — no LI support ---
   addBits(0, 16); // MaxVendorId = 0
   addBits(0,  1); // IsRangeEncoding = false
+  addBits(0, 12); // NumEntries = 0 
+  
+   // === Disclosed Vendors (MANDATORY for TCF v2.3) ===
+  addBits(MAX_VENDOR_ID, 16);
+  addBits(1,  1);             // IsRangeEncoding = true
+  addBits(1, 12);             // NumEntries = 1
+  addBits(1,  1);             // IsARange = true
+  addBits(1, 16);             // Start = 1
+  addBits(MAX_VENDOR_ID, 16); // End
+
 
   // Pad to byte boundary
   while (bits.length % 8 !== 0) {
@@ -503,47 +513,52 @@ function buildSyntheticTCString(purposes) {
  *   Purposes 11-24 ← false (no mapping)
  */
 function getSyntheticTCString() {
-  var adStorage, analyticsStorage, adUserData, adPersonalization;
-  var source = 'all-granted';
+  let adStorage = false;
+  let analyticsStorage = false;
+  let adUserData = false;
+  let adPersonalization = false;
+  let source = 'all-granted';
 
-  //  Level 1: explicit event data consent fields
-  var evAdStorage         = getData('ad_storage');
-  var evAnalyticsStorage  = getData('analytics_storage');
-  var evAdUserData        = getData('ad_user_data');
-  var evAdPersonalization = getData('ad_personalization');
+  // Level 1: explicit event data consent fields
+  const evAdStorage         = getData('ad_storage');
+  const evAnalyticsStorage  = getData('analytics_storage');
+  const evAdUserData        = getData('ad_user_data');
+  const evAdPersonalization = getData('ad_personalization');
 
-  if ( evAdStorage || evAnalyticsStorage || evAdUserData || evAdPersonalization ) {
-    adStorage         = evAdStorage         === 'granted';
-    analyticsStorage  = evAnalyticsStorage  === 'granted';
-    adUserData        = evAdUserData        === 'granted';
-    adPersonalization = evAdPersonalization === 'granted';
+  if (evAdStorage || evAnalyticsStorage || evAdUserData || evAdPersonalization) {
+    adStorage         = makeString(evAdStorage)         === 'granted';
+    analyticsStorage  = makeString(evAnalyticsStorage)  === 'granted';
+    adUserData        = makeString(evAdUserData)        === 'granted';
+    adPersonalization = makeString(evAdPersonalization) === 'granted';
     source = 'event-data-fields';
 
   } else {
-    // Level 2: gcd parameter ──
-    var gcd = getData('gcd') || '';
-    var grantedLetters = 'nrtv';
+    // Level 2: gcd parameter
+    const gcdStr = makeString(getData('gcd') || '');
+    const gcd = gcdStr.split('');
+    const grantedLetters = 'nrtv';
 
-    if ( gcd.length >= 9 ) {
-      adStorage         = grantedLetters.indexOf(gcd.charAt(2)) >= 0;
-      analyticsStorage  = grantedLetters.indexOf(gcd.charAt(4)) >= 0;
-      adUserData        = grantedLetters.indexOf(gcd.charAt(6)) >= 0;
-      adPersonalization = grantedLetters.indexOf(gcd.charAt(8)) >= 0;
+    if (gcd.length >= 9) {
+      adStorage         = grantedLetters.indexOf(gcd[2]) >= 0;
+      analyticsStorage  = grantedLetters.indexOf(gcd[4]) >= 0;
+      adUserData        = grantedLetters.indexOf(gcd[6]) >= 0;
+      adPersonalization = grantedLetters.indexOf(gcd[8]) >= 0;
       source = 'gcd';
 
     } else {
-      // Level 3: x-ga-gcs (2 signals only) 
-      var gcs = getData('x-ga-gcs') || '';
+      // Level 3: x-ga-gcs (only 2 signals)
+      const gcsStr = makeString(getData('x-ga-gcs') || '');
+      const gcs = gcsStr.split('');
 
-      if ( gcs.length >= 4 && gcs.charAt(0) === 'G' ) {
-        adStorage         = gcs.charAt(2) === '1';
-        analyticsStorage  = gcs.charAt(3) === '1';
-        adUserData        = false; // not encoded in x-ga-gcs
-        adPersonalization = false; // not encoded in x-ga-gcs
+      if (gcs.length >= 4 && gcs[0] === 'G') {
+        adStorage         = gcs[2] === '1';
+        analyticsStorage  = gcs[3] === '1';
+        adUserData        = false;
+        adPersonalization = false;
         source = 'x-ga-gcs';
 
       } else {
-        // Level 4: all granted
+        // Level 4: default = all granted
         adStorage         = true;
         analyticsStorage  = true;
         adUserData        = true;
@@ -558,7 +573,8 @@ function getSyntheticTCString() {
       '| ad_user_data:', adUserData,
       '| ad_personalization:', adPersonalization);
 
-  var purposes = {
+  // Map to TCF purposes
+  const purposes = {
     1:  adStorage || analyticsStorage,
     2:  adStorage,
     3:  adStorage && adPersonalization,
@@ -569,7 +585,7 @@ function getSyntheticTCString() {
     8:  analyticsStorage,
     9:  analyticsStorage,
     10: analyticsStorage
-    // 11-24: undefined → false in buildSyntheticTCString
+    // Purposes 11-24 remain false
   };
 
   return buildSyntheticTCString(purposes);
