@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page/p/rkn8tRDS5jo8FZ/Google-Tag-Manager-Server-side
 versions:
+  - sha: d6cce927269651ac2d19eeae4359cc1cc9a970e6
+    changeNotes: fix TCString dates
   - sha: be4de8029982e92bc01459a15a915fc14758ad13
     changeNotes: refactor TCString building in edge cases
   - sha: a1c54dc38a59b5d8b2712a098f13df947bac599d
