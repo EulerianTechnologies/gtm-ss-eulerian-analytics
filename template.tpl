@@ -316,34 +316,6 @@ function isValidTCString(val) {
 }
 
 /**
- * Decode a base64url string into an array of bytes.
- */
-function base64urlToBytes(str) {
-  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-  let repDash	  = createRegex('-', 'g');
-  let repUnder	= createRegex('_', 'g');
-  let base64    = str.replace(repDash, '+').replace(repUnder, '/');
-  while (base64.length % 4) {
-    base64 += '=';
-  }
-  let bytesV = [];
-  for (let i = 0; i < base64.length; i += 4) {
-    let b0 = chars.indexOf(base64[i]);
-    let b1 = chars.indexOf(base64[i+1]);
-    let b2 = chars.indexOf(base64[i+2]);
-    let b3 = chars.indexOf(base64[i+3]);
-    bytesV.push((b0 << 2) | (b1 >> 4));
-    if (base64[i+2] !== '=') {
-      bytesV.push(((b1 & 15) << 4) | (b2 >> 2));
-    }
-    if (base64[i+3] !== '=') {
-      bytesV.push(((b2 & 3) << 6) | b3);
-    }
-  }
-  return bytesV;
-}
-
-/**
  * Encode an array of bytes to a base64url string.
  */
 function bytesToBase64url(bytes) {
