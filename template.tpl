@@ -356,7 +356,7 @@ function bytesToBase64url(bytes) {
     base64 += (i+1 < bytes.length) ? chars[((b1 & 15) << 2) | (b2 >> 6)] : '=';
     base64 += (i+2 < bytes.length) ? chars[b2 & 63] : '=';
   }
-  let repPlus	  = createRegex('+', 'g');
+  let repPlus	  = createRegex('\\+', 'g');
   let repSlash	= createRegex('/', 'g');
   let repEq	    = createRegex('=', 'g');
 
