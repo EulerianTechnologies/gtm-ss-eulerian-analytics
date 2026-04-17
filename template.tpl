@@ -196,8 +196,9 @@ const testRegex = require('testRegex');
 const sha256Sync = require('sha256Sync');
 const getCookieValues = require('getCookieValues');
 const log = require('logToConsole');
+const Math = require('Math');
 
-const TEMPLATE_VERSION = '1.4.2';
+const TEMPLATE_VERSION = '1.4.3';
 
 const SANITIZE_REX = createRegex('\\s+', 'g');
 
@@ -431,7 +432,8 @@ function buildSyntheticTCString(purposes) {
     }
   }
 
-  let ds = makeInteger(getTimestampMillis() / 100); // TCF uses deciseconds
+  // TCF uses deciseconds truncate at day level
+  let ds = makeInteger(Math.floor(getTimestampMillis() / 86400000) * 864000);
 
   // Core String Header
   addBits(2,            6);  // Version           0    6
