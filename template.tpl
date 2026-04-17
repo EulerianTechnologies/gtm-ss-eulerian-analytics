@@ -435,12 +435,26 @@ function buildSyntheticTCString(purposes) {
    * Safely add letters (A-Z) using makeString
    */
   function addLetters(input) {
-    let str = makeString(input || '');
+    let str = makeString(input || '').toUpperCase();
 
-    for (let i = 0; i < str.length; i++) {
-      const code = str.charCodeAt(i);
-      if (code >= 65 && code <= 90) {   // A-Z only
-        addBits(code - 65, 6);
+    const chars = str.split('');
+
+    // Lookup table: A=0 ... Z=25
+    const charToBits = {
+        'A': 0,  'B': 1,  'C': 2,  'D': 3,  'E': 4,  'F': 5,
+        'G': 6,  'H': 7,  'I': 8,  'J': 9,  'K': 10, 'L': 11,
+        'M': 12, 'N': 13, 'O': 14, 'P': 15, 'Q': 16, 'R': 17,
+        'S': 18, 'T': 19, 'U': 20, 'V': 21, 'W': 22, 'X': 23,
+        'Y': 24, 'Z': 25
+    };
+
+    for (let i = 0; i < chars.length; i++) {
+        
+      const ch   = chars[i];
+      const code = charToBits[ch];
+
+      if (code !== undefined) {               // only process A-Z
+         addBits(code, 6);
       }
     }
   }
