@@ -197,7 +197,7 @@ const sha256Sync = require('sha256Sync');
 const getCookieValues = require('getCookieValues');
 const log = require('logToConsole');
 
-const TEMPLATE_VERSION = '1.4.1';
+const TEMPLATE_VERSION = '1.4.2';
 
 const SANITIZE_REX = createRegex('\\s+', 'g');
 
