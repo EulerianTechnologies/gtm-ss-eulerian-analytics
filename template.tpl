@@ -39,186 +39,188 @@ ___INFO___
 ___TEMPLATE_PARAMETERS___
 
 [
-  {
-    "type": "TEXT",
-    "name": "targetHost",
-    "displayName": "Name of the target domain",
-    "simpleValueType": true,
-    "help": "Takes the value of the domain provided in data-collection domain. Example: https://io1.eulerian.net - you need to provide io1.eulerian.net",
-    "valueValidators": [
-      {
-        "type": "REGEX",
-        "args": [ "^[a-z0-9.-]+\\.[a-z]{2,}$" ]
-      }
-    ],
-    "alwaysInSummary": true
-  },
-  {
-    "type": "GROUP",
-    "name": "Consent",
-    "displayName": "Manage consent",
-    "groupStyle": "ZIPPY_OPEN",
-    "subParams": [
-      {
-        "type": "CHECKBOX",
-        "name": "enoepm",
-        "checkboxText": "Traffic is always consented (enoepm=1)",
-        "simpleValueType": true,
-        "help": "All traffic is considered consented. WARNING: use only when consent is guaranteed BEFORE this tag is triggered. This takes priority over all other consent settings.",
-        "alwaysInSummary": true
-      },
-      {
-        "type": "TEXT",
-        "name": "consent-pmcat",
-        "displayName": "List of pmcat values to use for consent",
-        "simpleValueType": true,
-        "help": "Takes the ids of pmcats for which you have consent, ex: 1-3",
-        "alwaysInSummary": true,
-        "enablingConditions": [
-          {
-            "paramName": "enoepm",
-            "paramValue": false,
-            "type": "EQUALS"
-          },
-	  	  {
-	    	"paramName": "tcfEnabled",
-	    	"paramValue": false,
-	    	"type": "EQUALS"
-	  	  }
-        ]
-      },
-      {
-        "type": "GROUP",
-        "name": "tcfGroup",
-        "displayName": "TCF v2 Consent String",
-        "groupStyle": "ZIPPY_CLOSED",
-        "enablingConditions": [
-          {
-            "paramName": "enoepm",
-            "paramValue": false,
-            "type": "EQUALS"
-          }
-        ],
-        "subParams": [
-          {
-            "type": "CHECKBOX",
-            "name": "tcfEnabled",
-            "checkboxText": "Enable TCF v2 consent string forwarding",
-            "simpleValueType": true,
-            "help": "When enabled, a TCString will be attached to every Eulerian call.",
-            "alwaysInSummary": true
-          },
-          {
-            "type": "RADIO",
-            "name": "tcfSource",
-            "displayName": "TCString Source",
-            "simpleValueType": true,
-            "defaultValue": "cookie",
-            "help": "Choose how the TCString is obtained.",
-            "radioItems": [
-              {
-                "value": "cookie",
-                "displayValue": "Read from euconsent-v2 cookie",
-                "help": "Reads the TCString directly from the euconsent-v2 cookie. Requires your GTMSS container to be served from a first-party subdomain (e.g. gtm.yourdomain.com)."
-              },
-              {
-                "value": "variable",
-                "displayValue": "Provide TCString via a GTM variable",
-                "help": "Map any GTM SS variable (e.g. Event Data variable, custom variable) that resolves to a valid TCF v2 TCString. Useful when the TCString is pushed to the dataLayer client-side or forwarded as an event parameter."
-              }
-            ],
-            "enablingConditions": [
-              {
-                "paramName": "tcfEnabled",
-                "paramValue": true,
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "tcfDefaultString",
-            "displayName": "Fallback TCString (optional)",
-            "simpleValueType": true,
-            "help": "Used when the euconsent-v2 cookie is absent or invalid. Leave empty to abort the tag call entirely when no valid cookie TCString is available.",
-            "alwaysInSummary": false,
-            "enablingConditions": [
-              {
-                "paramName": "tcfEnabled",
-                "paramValue": true,
-                "type": "EQUALS"
-              },
-              {
-                "paramName": "tcfSource",
-                "paramValue": "cookie",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "tcfVariableString",
-            "displayName": "GTM Variable holding the TCString",
-            "simpleValueType": true,
-            "help": "Select or type the GTM SS variable that resolves to a valid TCF v2 TCString (e.g. {{Event Data - tcString}} or a custom variable). If the variable resolves to an empty or invalid value the tag will be aborted.",
-            "alwaysInSummary": true,
-            "enablingConditions": [
-              {
-                "paramName": "tcfEnabled",
-                "paramValue": true,
-                "type": "EQUALS"
-              },
-              {
-                "paramName": "tcfSource",
-                "paramValue": "variable",
-                "type": "EQUALS"
-              }
-            ]
-          }
-        ]
-      }
-	]
-  },
-  {
-	"type": "GROUP",
-	"name": "advancedMapping",
-	"displayName": "Advanced event name remapping",
-	"groupStyle": "ZIPPY_OPEN",
-	"subParams": [{
-			"type": "SIMPLE_TABLE",
-			"name": "eventNameMappings",
-			"displayName": "Remap custom event names to standard events",
-			"simpleTableColumns": [
-				{
-					"defaultValue": "",						
-					"displayName": "Event name pattern (JS regex)",
-					"name": "patten",
-					"type": "TEXT",
-					"valueValidators": [
-						{ "type": "NON_EMPTY" }
-					]
-				},
-				{
-					"defaultValue": "page_view",
-					"displayName": "Treat as",
-					"name": "standardEvent",
-					"type": "SELECT",
-					"selectItems": [
-						{ "value": "page_view",        "displayValue": "page_view" },
-						{ "value": "view_item",        "displayValue": "view_item" },
-						{ "value": "add_to_cart",      "displayValue": "add_to_cart" },
-						{ "value": "remove_from_cart", "displayValue": "remove_from_cart" },
-						{ "value": "purchase",         "displayValue": "purchase" },
-						{ "value": "generate_lead",    "displayValue": "generate_lead" }
-					]
-				}
-			],
-			"newRowButtonText": "Add a mapping",
-			"help": "Optional. Each row's pattern is a JavaScript regular expression tested against the incoming event_name. The first matching row wins; rules are evaluated top-down. Anchor your pattern with ^ and $ for an exact match (e.g. ^purchase_custom$), or use a prefix pattern (^purchase_.*$) to catch a whole family. The original event_name is always preserved in the 'ga-event_name' parameter sent to Eulerian."
-		}
-    ]
-  }
+        {
+                "type": "TEXT",
+                "name": "targetHost",
+                "displayName": "Name of the target domain",
+                "simpleValueType": true,
+                "help": "Takes the value of the domain provided in data-collection domain. Example: https://io1.eulerian.net - you need to provide io1.eulerian.net",
+                "valueValidators": [
+                        {
+                                "type": "REGEX",
+                                "args": [ "^[a-z0-9.-]+\\.[a-z]{2,}$" ]
+                        }
+                ],
+                "alwaysInSummary": true
+        },
+        {
+                "type": "GROUP",
+                "name": "Consent",
+                "displayName": "Manage consent",
+                "groupStyle": "ZIPPY_OPEN",
+                "subParams": [
+                        {
+                                "type": "CHECKBOX",
+                                "name": "enoepm",
+                                "checkboxText": "Traffic is always consented (enoepm=1)",
+                                "simpleValueType": true,
+                                "help": "All traffic is considered consented. WARNING: use only when consent is guaranteed BEFORE this tag is triggered. This takes priority over all other consent settings.",
+                                "alwaysInSummary": true
+                        },
+                        {
+                                "type": "TEXT",
+                                "name": "consent-pmcat",
+                                "displayName": "List of pmcat values to use for consent",
+                                "simpleValueType": true,
+                                "help": "Takes the ids of pmcats for which you have consent, ex: 1-3",
+                                "alwaysInSummary": true,
+                                "enablingConditions": [
+                                        {
+                                                "paramName": "enoepm",
+                                               "paramValue": false,
+                                                "type": "EQUALS"
+                                        },
+                                        {
+                                                "paramName": "tcfEnabled",
+                                                "paramValue": false,
+                                                "type": "EQUALS"
+                                        }
+                                ]
+                        },
+                        {
+                                "type": "GROUP",
+                                "name": "tcfGroup",
+                                "displayName": "TCF v2 Consent String",
+                                "groupStyle": "ZIPPY_CLOSED",
+                                "enablingConditions": [
+                                        {
+                                                "paramName": "enoepm",
+                                                "paramValue": false,
+                                                "type": "EQUALS"
+                                        }
+                                ],
+                                "subParams": [
+                                        {
+                                                "type": "CHECKBOX",
+                                                "name": "tcfEnabled",
+                                                "checkboxText": "Enable TCF v2 consent string forwarding",
+                                                "simpleValueType": true,
+                                                "help": "When enabled, a TCString will be attached to every Eulerian call.",
+                                                "alwaysInSummary": true
+                                        },
+                                        {
+                                                "type": "RADIO",
+                                                "name": "tcfSource",
+                                                "displayName": "TCString Source",
+                                                "simpleValueType": true,
+                                                "defaultValue": "cookie",
+                                                "help": "Choose how the TCString is obtained.",
+                                               "radioItems": [
+                                                        {
+                                                                "value": "cookie",
+                                                                "displayValue": "Read from euconsent-v2 cookie",
+                                                                "help": "Reads the TCString directly from the euconsent-v2 cookie. Requires your GTMSS container to be served from a first-party subdomain (e.g. gtm.yourdomain.com)."
+                                                        },
+                                                        {
+                                                                "value": "variable",
+                                                                "displayValue": "Provide TCString via a GTM variable",
+                                                                "help": "Map any GTM SS variable (e.g. Event Data variable, custom variable) that resolves to a valid TCF v2 TCString. Useful when the TCString is pushed to the dataLayer client-side or forwarded as an event parameter."
+                                                        }
+                                                ],
+                                                "enablingConditions": [
+                                                        {
+                                                                "paramName": "tcfEnabled",
+                                                                "paramValue": true,
+                                                                "type": "EQUALS"
+                                                        }
+                                                ]
+                                        },
+                                        {
+                                                "type": "TEXT",
+                                                "name": "tcfDefaultString",
+                                                "displayName": "Fallback TCString (optional)",
+                                                "simpleValueType": true,
+                                                "help": "Used when the euconsent-v2 cookie is absent or invalid. Leave empty to abort the tag call entirely when no valid cookie TCString is available.",
+                                                "alwaysInSummary": false,
+                                                "enablingConditions": [
+                                                        {
+                                                                "paramName": "tcfEnabled",
+                                                                "paramValue": true,
+                                                                "type": "EQUALS"
+                                                        },
+                                                        {
+                                                                "paramName": "tcfSource",
+                                                                "paramValue": "cookie",
+                                                               "type": "EQUALS"
+                                                        }
+                                                ]
+                                        },
+                                        {
+                                                "type": "TEXT",
+                                                "name": "tcfVariableString",
+                                                "displayName": "GTM Variable holding the TCString",
+                                                "simpleValueType": true,
+                                                "help": "Select or type the GTM SS variable that resolves to a valid TCF v2 TCString (e.g. {{Event Data - tcString}} or a custom variable). If the variable resolves to an empty or invalid value the tag will be aborted.",
+                                                "alwaysInSummary": true,
+                                                "enablingConditions": [
+                                                        {
+                                                                "paramName": "tcfEnabled",
+                                                                "paramValue": true,
+                                                                "type": "EQUALS"
+                                                        },
+                                                        {
+                                                                "paramName": "tcfSource",
+                                                                "paramValue": "variable",
+                                                                "type": "EQUALS"
+                                                        }
+                                                ]
+                                        }
+                                ]
+                        }
+                ]
+        },
+        {
+                "type": "GROUP",
+                "name": "advancedMapping",
+                "displayName": "Advanced event name remapping",
+                "groupStyle": "ZIPPY_OPEN",
+                "subParams": [
+                        {
+                                "type": "SIMPLE_TABLE",
+                                "displayName": "Remap custom event names to standard events",
+ 								"name": "eventNameMappings",
+                                "simpleTableColumns": [
+                                        {
+                                                "defaultValue": "",
+                                                "displayName": "Event name pattern (JS regex)",
+                                                "name": "patten",
+                                                "type": "TEXT",
+                                                "valueValidators": [
+                                                        { "type": "NON_EMPTY" }
+                                                ]
+                                        },
+                                        {
+                                                "defaultValue": "page_view",
+                                                "displayName": "Treat as",
+                                                "name": "standardEvent",
+                                                "type": "SELECT",
+                                                "selectItems": [
+                                                        { "value": "page_view",        "displayValue": "page_view" },
+                                                        { "value": "view_item",        "displayValue": "view_item" },
+                                                        { "value": "add_to_cart",      "displayValue": "add_to_cart" },
+                                                        { "value": "remove_from_cart", "displayValue": "remove_from_cart" },
+                                                        { "value": "purchase",         "displayValue": "purchase" },
+                                                        { "value": "generate_lead",    "displayValue": "generate_lead" }
+                                                ]
+                                        }
+                                ],
+                                "newRowButtonText": "Add a mapping",
+                                "help": "Optional. Each row's pattern is a JavaScript regular expression tested against the incoming event_name. The first matching row wins; rules are evaluated top-down. Anchor your pattern with ^ and $ for an exact match (e.g. ^purchase_custom$), or use a prefix pattern (^purchase_.*$) to catch a whole family. The original event_name is always preserved in the 'ga-event_name' parameter sent to Eulerian."
+                        }
+                ]
+        }
 ]
+
 
 
 ___SANDBOXED_JS_FOR_SERVER___
