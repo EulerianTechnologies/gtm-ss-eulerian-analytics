@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page/p/rkn8tRDS5jo8FZ/Google-Tag-Manager-Server-side
 versions:
+  - sha: d8a00d216ae3c3cf29ee2c16f24b514a098f2a8b
+    changeNotes: add support for custom event remap
   - sha: d6cce927269651ac2d19eeae4359cc1cc9a970e6
     changeNotes: fix TCString dates
   - sha: be4de8029982e92bc01459a15a915fc14758ad13
