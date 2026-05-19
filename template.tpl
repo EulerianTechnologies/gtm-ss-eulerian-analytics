@@ -80,11 +80,11 @@ ___TEMPLATE_PARAMETERS___
             "paramValue": false,
             "type": "EQUALS"
           },
-	  {
-	    "paramName": "tcfEnabled",
-	    "paramValue": false,
-	    "type": "EQUALS"
-	  }
+	  	  {
+	    	"paramName": "tcfEnabled",
+	    	"paramValue": false,
+	    	"type": "EQUALS"
+	  	  }
         ]
       },
       {
@@ -178,6 +178,7 @@ ___TEMPLATE_PARAMETERS___
         ]
       }
 	]
+  }]
 },
 {
 	"type": "GROUP",
