@@ -176,7 +176,46 @@ ___TEMPLATE_PARAMETERS___
             ]
           }
         ]
-      }
+      },
+	  {
+	    "type": "GROUP",
+		"name": "advancedMapping",
+		"displayName": "Advanced event name remapping",
+		"groupStyle": "ZIPPY_CLOSED",
+		"subParams": [{
+				"type": "SIMPLE_TABLE",
+				"name": "eventNameMappings",
+				"displayName": "Remap custom event names to standard events",
+				"simpleTableColumns": [
+					{
+						"defaultValue": "",
+						"displayName": "Event name pattern (JS regex)",
+						"name": "pattern",
+						"type": "TEXT",
+						"valueValidators": [
+							{ "type": "NON_EMPTY" }
+						]
+					},
+					{
+						"defaultValue": "page_view",
+						"displayName": "Treat as",
+						"name": "standardEvent",
+						"type": "SELECT",
+						"selectItems": [
+							{ "value": "page_view",        "displayValue": "page_view" },
+							{ "value": "view_item",        "displayValue": "view_item" },
+							{ "value": "add_to_cart",      "displayValue": "add_to_cart" },
+							{ "value": "remove_from_cart", "displayValue": "remove_from_cart" },
+							{ "value": "purchase",         "displayValue": "purchase" },
+							{ "value": "generate_lead",    "displayValue": "generate_lead" }
+						]
+					}
+				],
+				"newRowButtonText": "Add a mapping",
+				"help": "Optional. Each row's pattern is a JavaScript regular expression tested against the incoming event_name. The first matching row wins; rules are evaluated top-down. Anchor your pattern with ^ and $ for an exact match (e.g. ^purchase_custom$), or use a prefix pattern (^purchase_.*$) to catch a whole family. The original event_name is always preserved in the 'ga-event_name' parameter sent to Eulerian."
+			}
+		]
+	  }
     ]
   }
 ]
@@ -198,7 +237,7 @@ const getCookieValues = require('getCookieValues');
 const log = require('logToConsole');
 const Math = require('Math');
 
-const TEMPLATE_VERSION = '1.4.3';
+const TEMPLATE_VERSION = '1.5.0';
 
 const SANITIZE_REX = createRegex('\\s+', 'g');
 
@@ -329,7 +368,7 @@ function bytesToBase64url(bytes) {
     base64 += (i+1 < bytes.length) ? chars[((b1 & 15) << 2) | (b2 >> 6)] : '=';
     base64 += (i+2 < bytes.length) ? chars[b2 & 63] : '=';
   }
-  let repPlus	  = createRegex('\\+', 'g');
+  let repPlus	= createRegex('\\+', 'g');
   let repSlash	= createRegex('/', 'g');
   let repEq	    = createRegex('=', 'g');
 
@@ -674,6 +713,34 @@ if ( getData("enoepm") ) {
 
 let event_name = makeString(getData("event_name") || 'no_event_name');
 payload["ga-event_name"] = event_name;
+
+/**
+ * Optional remap of custom event names to standard events.
+ * The original name is already preserved in payload["ga-event_name"]
+ * above, so reporting downstream is unaffected.
+ * Rules are evaluated top-down; first match wins.
+ */
+let eventNameMappings = getData("eventNameMappings") || [];
+if ( eventNameMappings && eventNameMappings.length ) {
+  for ( let i = 0; i < eventNameMappings.length; i++ ) {
+    let mapping = eventNameMappings[i] || {};
+    let pattern = makeString(mapping.pattern || '').trim();
+    let target  = makeString(mapping.standardEvent || '').trim();
+    if ( !pattern || !target ) continue;
+
+    let rex = createRegex(pattern, '');
+    if ( !rex ) {
+      log('Eulerian eventNameRemap: invalid regex pattern, skipped:', pattern);
+      continue;
+    }
+
+    if ( testRegex(rex, event_name) ) {
+      log('Eulerian eventNameRemap: event_name "' + event_name + '" -> "' + target + '" via pattern:', pattern);
+      event_name = target;
+      break;
+    }
+  }
+}
 
 let gaEData = getAllEventData() || {};
 
