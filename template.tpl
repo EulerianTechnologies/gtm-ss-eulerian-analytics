@@ -178,9 +178,8 @@ ___TEMPLATE_PARAMETERS___
         ]
       }
 	]
-  }]
-},
-{
+  },
+  {
 	"type": "GROUP",
 	"name": "advancedMapping",
 	"displayName": "Advanced event name remapping",
