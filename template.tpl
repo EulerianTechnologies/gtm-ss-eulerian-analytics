@@ -183,7 +183,7 @@ ___TEMPLATE_PARAMETERS___
 	"type": "GROUP",
 	"name": "advancedMapping",
 	"displayName": "Advanced event name remapping",
-	"groupStyle": "ZIPPY_CLOSED",
+	"groupStyle": "ZIPPY_OPEN",
 	"subParams": [{
 			"type": "SIMPLE_TABLE",
 			"name": "eventNameMappings",
