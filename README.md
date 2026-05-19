@@ -86,9 +86,7 @@ A lead is registered in this case :
 
 Custom events not listed above are directly sent to actions/goals for further processing in the platform.
 
-#### unsupported events
-
-If you use custom events that are sub-types of an existing events, you can use the remapping table to map an event to another one.
+If you use custom events that are sub-types of an existing event, you can use the remapping table to map an event to another one.
 
 For example: you have `purchase_offline` that **is** a purchase event, you **must** add it to the remap table so that the event will be treated accordingly in our platform.
 
