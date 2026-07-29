@@ -77,7 +77,7 @@ ___TEMPLATE_PARAMETERS___
                                 "enablingConditions": [
                                         {
                                                 "paramName": "enoepm",
-                                               "paramValue": false,
+                                                "paramValue": false,
                                                 "type": "EQUALS"
                                         },
                                         {
@@ -115,7 +115,7 @@ ___TEMPLATE_PARAMETERS___
                                                 "simpleValueType": true,
                                                 "defaultValue": "cookie",
                                                 "help": "Choose how the TCString is obtained.",
-                                               "radioItems": [
+                                                "radioItems": [
                                                         {
                                                                 "value": "cookie",
                                                                 "displayValue": "Read from euconsent-v2 cookie",
@@ -193,7 +193,7 @@ ___TEMPLATE_PARAMETERS___
                                         {
                                                 "defaultValue": "",
                                                 "displayName": "Event name pattern (JS regex)",
-                                                "name": "patten",
+                                                "name": "pattern",
                                                 "type": "TEXT",
                                                 "valueValidators": [
                                                         { "type": "NON_EMPTY" }
