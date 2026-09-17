@@ -361,7 +361,7 @@ function isValidTCString(val) {
  * Encode an array of bytes to a base64url string.
  */
 function bytesToBase64url(bytes) {
-  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split('');
   let base64 = '';
   for (let i = 0; i < bytes.length; i += 3) {
     let b0 = bytes[i], b1 = bytes[i+1] || 0, b2 = bytes[i+2] || 0;
