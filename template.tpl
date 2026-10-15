@@ -89,10 +89,10 @@ ___TEMPLATE_PARAMETERS___
                        },
                        {
                                "type": "CHECKBOX",
-                               "name": "cookielessEnabled",
-                               "checkboxText": "Stable cookieless id for non-consented traffic",
+                               "name": "cookielessDisabled",
+                               "checkboxText": "Disable the stable cookieless id for non-consented traffic",
                                "simpleValueType": true,
-                               "help": "When analytics_storage is denied, GA4 renews the client_id on every page load, so every page view gets its own euidl. This derives a non-persistent euidl from a hash of IP (IPv6 /64) + user agent + screen resolution + language + the UTC day, so it changes every 24h. Have it validated by your DPO before enabling.",
+                               "help": "By default, when analytics_storage is denied (GA4 renews the client_id on every page load, so every page view would get its own euidl), the euidl is derived from a hash of IP (IPv6 /64) + user agent + screen resolution + language + the UTC day, so it changes every 24h and a visit can be rebuilt. WARNING: if you disable this, every page view of a non-consented visitor counts as a new visit and the opt-out visits are heavily inflated. Only disable it if your DPO / legal team does not accept this derivation.",
                                "alwaysInSummary": true,
                                "enablingConditions": [
                                        {
@@ -648,7 +648,6 @@ function getSyntheticTCString() {
  return buildSyntheticTCString(purposes);
 }
 
-// 
 
 /**
 * True when analytics_storage is denied. Same signal order as
@@ -686,14 +685,14 @@ function ipPrefix(ip) {
  return s.split(':').slice(0, 4).join(':');
 }
 
-// 
 
 let user_data = getData("user_data") || {};
 let client_id = getData("client_id") || '';
 
 /**
-* Without analytics_storage GA4 sends a random client_id renewed on every
-* page load: euidl (sha256 of it) then changes on every page view and a visit
+* On by default (cookielessDisabled unchecked), also for tags saved before the
+* option existed. Without analytics_storage GA4 sends a random client_id
+* renewed on every page load: euidl (sha256 of it) then changes on every page view and a visit
 * can no longer be rebuilt. For that traffic only, derive the id from stable
 * request attributes instead, salted with the UTC day: nothing is stored,
 * and the id cannot be linked from one day to the next.
@@ -701,7 +700,7 @@ let client_id = getData("client_id") || '';
 */
 let euidlSource = client_id;
 let cookieless = false;
-if ( data.cookielessEnabled && !data.enoepm && isAnalyticsDenied() ) {
+if ( !data.cookielessDisabled && !data.enoepm && isAnalyticsDenied() ) {
  cookieless = true;
  euidlSource = [
    makeInteger(getTimestampMillis() / 86400000),   // UTC day number
