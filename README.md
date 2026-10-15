@@ -26,9 +26,11 @@ If you don't already have an account, you can try our freemium platform through 
    
    6.3 Consent through TCF, in this case the TCString needs to be provided through a custom variable.
    
-7. save the template
-8. trigger the template with client = GA4 and on all events + custom events purchase / generate_lead.
-9. publish the modifications -> you are now **live** !
+7. *(nothing to do by default)* the [cookieless identifier](#cookieless-identifier-for-non-consented-traffic) is enabled for non-consented traffic, check that your DPO accepts it
+8. *(optional)* if your transaction amount is not in the GA4 `value` field, set the [amount field](#custom-amount-field)
+9. save the template
+10. trigger the template with client = GA4 and on all events + custom events purchase / generate_lead.
+11. publish the modifications -> you are now **live** !
 
 ### Which events are mapped
 
@@ -43,7 +45,7 @@ The following global parameters are always provided to each call sent to us as l
 | `screen_resolution` | `ss` |
 | `ip_override` | `ereplay-ip` |
 | `user_agent` | `ereplay-ua` |
-| `client_id` | `euidl` |
+| `client_id` | `euidl` (SHA-256 hash of the `client_id`, see [cookieless identifier](#cookieless-identifier-for-non-consented-traffic) for non-consented traffic) |
 | `currency` | `currency` |
 | `user_id` | `uid` |
 | `user_data.sha256_email_address` or `user_data.em` | `email` |
@@ -60,16 +62,16 @@ Standard call done
 
 A transaction is registered in this case :
 - **transaction_id** mapped to **ref**
-- **value** mapped to **amount**
+- **value** (or the [custom amount field](#custom-amount-field)) mapped to **amount**
 - **items** mapped to product array & product params are prefixed by **ga-**
   
 #### add_to_cart
 
-Products listed in the **items** array are added to the current cart.
+Products listed in the **items** array are added to the current cart. **value** (or the [custom amount field](#custom-amount-field)) is mapped to **amount**.
 
 #### remove_from_cart
 
-Products listed in the **items** array are removed from the current cart.
+Products listed in the **items** array are removed from the current cart. **value** (or the [custom amount field](#custom-amount-field)) is mapped to **amount**.
 
 #### view_item
 
@@ -79,7 +81,7 @@ Product page is viewed and the first result of the items array is sent to Euleri
 
 A lead is registered in this case :
 - **transaction_id** mapped to **ref**, if not available a random ref is created
-- **value** mapped to **amount**
+- **value** (or the [custom amount field](#custom-amount-field)) mapped to **amount**
 - **items** mapped to product array & product params are prefixed by **ga-**
 
 #### custom events
@@ -89,6 +91,20 @@ Custom events not listed above are directly sent to actions/goals for further pr
 If you use custom events that are sub-types of an existing event, you can use the remapping table to map an event to another one.
 
 For example: you have `purchase_offline` that **is** a purchase event, you **must** add it to the remap table so that the event will be treated accordingly in our platform.
+
+#### Custom amount field
+
+By default the amount sent to us is the GA4 **value** field. If your datalayer carries the amount elsewhere (for example an amount excluding tax), fill in **"Event data field used for the amount"** in the **Advanced field mapping** group.
+
+| Setting | Behaviour |
+|---|---|
+| empty | the standard **value** field is used |
+| `value_excl_tax` | the top-level event data field `value_excl_tax` is used |
+| `ecommerce.total` | a nested field is read through its dotted path |
+
+- it applies to `add_to_cart`, `remove_from_cart`, `purchase` and `generate_lead`
+- if the configured field is missing or empty on an event, the template falls back to **value**, so a partially instrumented site keeps reporting amounts. A value of `0` is kept as is
+- a top-level custom field is not sent a second time as an additional parameter
 
 ### MULTI-EVENTS
 
@@ -220,6 +236,42 @@ enoepm=1 checked?
 ```
 > ⚠️ **Important:** - make sure the CMP is blocking navigation to avoid having a waiting consent status idling, you **MUST** provide the consent on all calls, if you set-up TCF and the CMP is non-blocking then traffic will be considered consented by default, you can use the Variable or defaultTCString set-up to change this behaviour.
 > We recommend in any case to have a blocking CMP.
+
+## Cookieless identifier for non-consented traffic
+
+### The problem
+
+The `euidl` sent to us is the SHA-256 hash of the GA4 `client_id`. When `analytics_storage` is denied, GA4 does not persist any identifier and issues a **new random `client_id` on every page load**. Each page view of a non-consented visitor then gets its own `euidl`, so a visit can no longer be rebuilt: visits, sessions and visitors are over-counted compared to what really happened.
+
+### The option
+
+The option is **enabled by default**, nothing has to be configured. To turn it off, check **"Disable the stable cookieless id for non-consented traffic"** in the **Manage consent** group.
+
+> ⚠️ **Upgrade note:** this applies to existing tags as soon as the template is updated, including tags saved before this option existed. From that moment the `euidl` of non-consented traffic changes, and the number of visits and visitors reported for that traffic **drops** because it is no longer counted once per page view. Plan this change with the people reading your reports.
+
+> ⚠️ **If you disable it, you will inflate the opt-out count of visits:** every page view of a non-consented visitor then gets its own `euidl` and is counted as a new visit, so the opt-out visits (and visitors) are strongly over-estimated, typically by a large multiple of the real figure. Only disable it if your DPO / legal team does not accept this derivation.
+
+For calls where `analytics_storage` is denied, the `euidl` is computed as:
+
+```
+euidl = sha256( UTC day | IPv6 /64 or IPv4 | user agent | screen resolution | language )
+```
+
+- **consented traffic is not impacted**, it keeps `sha256(client_id)`
+- the denied state is read with the same signals and priority as the synthetic TCString : `analytics_storage` event field, then `gcd`, then `x-ga-gcs`. If the state cannot be determined the traffic is considered consented
+- IPv6 addresses are truncated to their `/64` because privacy extensions rotate the rest of the address
+- the UTC day is part of the hash: the id **changes every 24h** and cannot be linked from one day to the next. A visit running over 00:00 UTC is split in two
+- nothing is stored: no cookie and no server-side storage, the id is recomputed on every call
+- the calls concerned carry the additional parameter `euidl-cookieless=1` so both populations can be told apart downstream
+- the derivation is not used when **enoepm=1** is checked, all traffic being considered consented
+
+### Limits
+
+- visitors sharing the same IP, user agent, screen resolution and language (company network, proxy, mobile carrier NAT) get the same id and are merged
+- a visitor changing network during the day gets a new id
+- **ga_session_id** is also renewed on every page load without consent, build your sessions on the `euidl` and not on `ga_session_id`
+
+> ⚠️ **Privacy:** a hash of an IP address and a user agent remains personal data and is **not** an anonymous identifier. As nothing in the hash is secret, anyone knowing an IP and a user agent can recompute the id of the day. Validate it with your DPO / legal team before keeping it enabled that it fits your audience-measurement framework (short-lived, not stored, not used across days, not shared with third parties) and your CMP policy. This option is the responsibility of the site owner.
 
 ### WARNING
 
