@@ -1,6 +1,8 @@
 homepage: https://www.eulerian.com
 documentation: https://eulerian.slite.page/p/rkn8tRDS5jo8FZ/Google-Tag-Manager-Server-side
 versions:
+  - sha: 41fde17267f09ea666a4faf01578a2143a6c49fa
+    changeNotes: enhance cookieless management for no-consent + amount override from a variable
   - sha: f8c94961d6efe07b4a43834985f0b5dda1ce0d51
     changeNotes: use split to avoid shadow call to charCodeAt from sandbox
   - sha: e4b1df2f75747cfcd034074ae1c09a5cce0df5ac
