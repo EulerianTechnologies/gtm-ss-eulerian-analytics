@@ -563,12 +563,12 @@ function buildSyntheticTCString(purposes) {
  addBits(1,             16); // StartVendorId = 1
  addBits(MAX_VENDOR_ID, 16); // EndVendorId = MAX_VENDOR_ID
 
-/** --- Vendor LI: empty TCF Purpose Mapping 
- *   Purpose 1      ad_storage
- *   Purpose 3      ad_storage AND ad_personalization
- *   Purpose 5      ad_user_data
- *   Purposes 7-10 false (no mapping)
- */
+ // --- Vendor LI: empty TCF Purpose Mapping 
+*   Purpose 1      ad_storage
+*   Purpose 3      ad_storage AND ad_personalization
+*   Purpose 5      ad_user_data
+*   Purposes 7-10 false (no mapping)
+*/
 function getSyntheticTCString() {
  let adStorage = false;
  let analyticsStorage = false;
@@ -648,7 +648,6 @@ function getSyntheticTCString() {
  return buildSyntheticTCString(purposes);
 }
 
-
 /**
 * True when analytics_storage is denied. Same signal order as
 * getSyntheticTCString: event data field, then gcd, then x-ga-gcs. Unknown
@@ -685,6 +684,7 @@ function ipPrefix(ip) {
  return s.split(':').slice(0, 4).join(':');
 }
 
+// 
 
 let user_data = getData("user_data") || {};
 let client_id = getData("client_id") || '';
@@ -692,10 +692,10 @@ let client_id = getData("client_id") || '';
 /**
 * On by default (cookielessDisabled unchecked), also for tags saved before the
 * option existed. Without analytics_storage GA4 sends a random client_id
-* renewed on every page load: euidl (sha256 of it) then changes on every page view and a visit
-* can no longer be rebuilt. For that traffic only, derive the id from stable
-* request attributes instead, salted with the UTC day: nothing is stored,
-* and the id cannot be linked from one day to the next.
+* renewed on every page load: euidl (sha256 of it) then changes on every page
+* view and a visit can no longer be rebuilt. For that traffic only, derive the
+* id from stable request attributes instead, salted with the UTC day: nothing
+* is stored, and the id cannot be linked from one day to the next.
 * Consented traffic keeps sha256(client_id), unchanged.
 */
 let euidlSource = client_id;
