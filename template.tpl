@@ -563,12 +563,12 @@ function buildSyntheticTCString(purposes) {
  addBits(1,             16); // StartVendorId = 1
  addBits(MAX_VENDOR_ID, 16); // EndVendorId = MAX_VENDOR_ID
 
- // --- Vendor LI: empty TCF Purpose Mapping 
-*   Purpose 1      ad_storage
-*   Purpose 3      ad_storage AND ad_personalization
-*   Purpose 5      ad_user_data
-*   Purposes 7-10 false (no mapping)
-*/
+/** --- Vendor LI: empty TCF Purpose Mapping 
+ *   Purpose 1      ad_storage
+ *   Purpose 3      ad_storage AND ad_personalization
+ *   Purpose 5      ad_user_data
+ *   Purposes 7-10 false (no mapping)
+ */
 function getSyntheticTCString() {
  let adStorage = false;
  let analyticsStorage = false;
